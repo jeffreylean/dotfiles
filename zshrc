@@ -1,1 +1,0 @@
-/Users/jeffreylean/.zshrc
