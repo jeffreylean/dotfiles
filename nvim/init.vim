@@ -106,12 +106,7 @@ au FileType go set tabstop=4
 " Auto import dependencies
 let g:go_fmt_command = "goimports"
 
-" Linting code 
-" Error and warning signs.
-let g:ale_sign_error = '⤫'
-let g:ale_sign_warning = '⚠'
 " Enable integration with airline.
-let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#hunks#enabled = 0
 let g:airline#extensions#branch#enabled = 1
 
@@ -129,6 +124,10 @@ au FileType go nmap <leader><F12> <Plug>(go-implements)
 " -------------------------------------------------------------------------------------------------
 " coc.nvim default settings
 " -------------------------------------------------------------------------------------------------
+
+"augroup cocgo
+"        autocmd BufWrite *.go :CocRestart
+"augroup END
 
 " if hidden is not set, TextEdit might fail.
 set hidden
@@ -187,7 +186,6 @@ nnoremap <silent> <space>p  :<C-u>CocListResume<CR>
 " disable vim-go :GoDef short cut (gd)
 " this is handled by LanguageClient [LC]
 let g:go_def_mapping_enabled = 0
-
 "JSON tag stuct
 let g:go_addtags_transform = "snakecase"
 
@@ -200,6 +198,15 @@ let g:delve_backend = "native"
 " ---------------------------------------------------------------------
 command! -nargs=0 Prettier :call CocAction('runCommand', 'prettier.formatFile')
 
+" ---------------------------------------------------------------------
+"  Vimwiki
+" ---------------------------------------------------------------------
+
+" split vertical wiki index note
+nmap <Leader>vv :vs \| :VimwikiIndex<CR>
+
+" split horizontal wiki index note
+nmap <Leader>vs :sp \| :VimwikiIndex<CR>
 
 
 " ---------------------------------------------------------------------
@@ -235,6 +242,11 @@ if exists("&termguicolors") && exists("&winblend")
   runtime ./colors/NeoSolarized.vim
   colorscheme NeoSolarized
 endif
+
+" ---------------------------------------------------------------------
+"  Icon
+" ---------------------------------------------------------------------
+let g:webdevicons_enable_ctrlp = 1
 
 " ---------------------------------------------------------------------
 " Extras

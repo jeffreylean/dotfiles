@@ -8,12 +8,14 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-rhubarb'
 Plug 'cohama/lexima.vim'
 Plug 'fatih/vim-go'
-Plug 'dense-analysis/ale'
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'sebdah/vim-delve'
+Plug 'vimwiki/vimwiki'
+Plug 'ryanoasis/vim-devicons'
 
-let g:coc_global_extensions = ['coc-tslint-plugin', 'coc-tsserver', 'coc-css', 'coc-html', 'coc-json', 'coc-prettier']  " list of CoC extensions needed
+
+let g:coc_global_extensions = ['coc-tslint-plugin', 'coc-tsserver', 'coc-css', 'coc-html', 'coc-json', 'coc-prettier','coc-go']  " list of CoC extensions needed
 
 if has('nvim')
     Plug 'neovim/nvim-lspconfig'
