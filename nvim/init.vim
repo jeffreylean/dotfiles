@@ -5,7 +5,7 @@ scriptencoding utf-8
 if !1 | finish | endif
 
 set nocompatible
-set nu 
+set nu
 set rnu
 set title
 set autoindent
@@ -30,6 +30,7 @@ if has ('nvim')
 endif
 
 set t_BE=
+
 
 " Go to tab by number
 noremap <leader>1 1gt
@@ -57,7 +58,8 @@ set wildignore+=*/node_modules/*
 autocmd InsertLeave * set nopaste
 " Add arterisks in block comments
 set formatoptions+=r
-
+" Vim will use ripgrep instead of grep
+set grepprg=rg\ --vimgrep\ --smart-case\ --follow
 
 " ---------------------------------------------------------------------
 " Highlights
@@ -94,24 +96,56 @@ au BufNewFile,BufRead *.tsx setf typescriptreact
 au BufNewFile,BufRead *.md setf markdown
 au BufNewFile,BufRead *.mdx setf markdown
 
+" FORMATTERS
+au FileType javascript setlocal formatprg=prettier
+au FileType javascript.jsx setlocal formatprg=prettier
+au FileType typescript setlocal formatprg=prettier\ --parser\ typescript
+au FileType html setlocal formatprg=js-beautify\ --type\ html
+au FileType scss setlocal formatprg=prettier\ --parser\ css
+au FileType css setlocal formatprg=prettier\ --parser\ css
+
 "----------------------------------------------------------------------
 "Plugin: deoplete
 "----------------------------------------------------------------------
 "enable deoplete autocomplete
 let g:deoplete#enable_at_startup = 1
 
+" use tab for completion
+function! s:check_back_space() abort "{{{
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ deoplete#manual_complete()
+
+" Disable preview
+set completeopt-=preview
+
 "----------------------------------------------------------------------
 "Plugin: ale
 "----------------------------------------------------------------------
 let g:ale_fixers = {
 \   'javascript': ['prettier', 'eslint'],
+  \    'typescript': ['prettier', 'tslint'],
+  \    'react': ['eslint'],
+  \    'scss': ['prettier'],
+  \    'html': ['prettier'],
+  \    'reason': ['refmt'],
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
 \}
 
 let g:ale_linters = {
 \ 'go': ['gopls'],
+\   'javascript': ['eslint'],
 \ }
-
+let g:ale_linters_explicit = 1
+let g:ale_lint_on_save = 1
+let g:ale_javascript_prettier_options = '--single-quote --trailing-comma none'
 let g:ale_fix_on_save = 1
+let g:ale_lint_on_enter = 0
+let g:ale_lint_on_text_changed = 'never'
 
 " Error and warning signs.
 let g:ale_sign_error = '✘'
@@ -120,14 +154,36 @@ let g:ale_sign_warning = ''
 " Go to definition
 au FileType javascript,typescriptreact nmap <F12> :ALEGoToDefinition<cr>
 
-"
 "----------------------------------------------------------------------
 "Plugin: airline
 "----------------------------------------------------------------------
 " Enable integration with airline.
-let g:airline#extensions#hunks#enabled = 0
-let g:airline#extensions#branch#enabled = 1
-let g:airline#extensions#ale#enabled = 1
+ let g:airline#extensions#hunks#enabled = 0
+ let g:airline#extensions#branch#enabled = 1
+ let g:airline#extensions#ale#enabled = 1
+
+"----------------------------------------------------------------------
+"Plugin: fzf bind
+"----------------------------------------------------------------------
+nnoremap <leader>, :Files<cr>
+inoremap <leader>, <esc>:Files<cr>
+vnoremap <leader>, <esc>:Files<cr>
+
+nnoremap <leader>h :History<cr>
+nnoremap <leader>c :History:<cr>
+nnoremap <leader>b :Buffers<cr>
+nnoremap <leader>w :Wipeouts<cr>
+nnoremap <silent> <Leader>f :Rg<CR>
+" To exclude file name for FZF and ripgrep searching
+command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
+
+"----------------------------------------------------------------------
+"Plugin: NERDTree
+"----------------------------------------------------------------------
+" automatically open NERDTree when vim start
+autocmd VimEnter * NERDTree
+nnoremap <C-n> :NERDTreeToggle<CR>
+let NERDTreeShowHidden=1
 
 "----------------------------------------------------------------------
 " language: golang
@@ -288,4 +344,3 @@ let g:webdevicons_enable_ctrlp = 1
 " Extras
 " ---------------------------------------------------------------------
 set exrc
-

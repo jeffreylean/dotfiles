@@ -1,6 +1,6 @@
 if has('nvim')
   let g:plug_home = stdpath('data') . '/plugged'
-endif 
+endif
 
 call plug#begin()
 
@@ -14,6 +14,9 @@ Plug 'sebdah/vim-delve'
 Plug 'vimwiki/vimwiki'
 Plug 'ryanoasis/vim-devicons'
 Plug 'dense-analysis/ale'
+Plug 'junegunn/fzf.vim'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'preservim/nerdtree'
 
 
 " let g:coc_global_extensions = ['coc-tslint-plugin', 'coc-tsserver', 'coc-css', 'coc-html', 'coc-json', 'coc-prettier','coc-go']  " list of CoC extensions needed
