@@ -31,6 +31,9 @@ endif
 
 set t_BE=
 
+" no swappppppp
+set noswapfile
+
 
 " Go to tab by number
 noremap <leader>1 1gt
@@ -61,6 +64,14 @@ set formatoptions+=r
 " Vim will use ripgrep instead of grep
 set grepprg=rg\ --vimgrep\ --smart-case\ --follow
 
+" Vimrc source
+nnoremap <leader>ev :vsplit $MYVIMRC<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+
+" set default splits below
+set splitbelow
+set splitright
+
 " ---------------------------------------------------------------------
 " Highlights
 " ---------------------------------------------------------------------
@@ -82,6 +93,9 @@ if &term =~ "screen"
   autocmd BufEnter * if bufname("") !~ "^?[A-Za-z0-9?]*://" | silent! exe '!echo -n "\ek[`hostname`:`basename $PWD`/`basename %`]\e\\"' | endif
   autocmd VimLeave * silent!  exe '!echo -n "\ek[`hostname`:`basename $PWD`]\e\\"'
 endif
+
+" Clear last search highlight
+nnoremap <esc> :noh<return><esc>
 
 " ---------------------------------------------------------------------
 " File types
@@ -126,6 +140,7 @@ set completeopt-=preview
 "----------------------------------------------------------------------
 "Plugin: ale
 "----------------------------------------------------------------------
+let g:ale_linter_aliases = {'jsx': 'javascript'}
 let g:ale_fixers = {
 \   'javascript': ['prettier', 'eslint'],
   \    'typescript': ['prettier', 'tslint'],
@@ -138,11 +153,11 @@ let g:ale_fixers = {
 
 let g:ale_linters = {
 \ 'go': ['gopls'],
-\   'javascript': ['eslint'],
+\   'javascript': ['tsserver'],
 \ }
 let g:ale_linters_explicit = 1
 let g:ale_lint_on_save = 1
-let g:ale_javascript_prettier_options = '--single-quote --trailing-comma none'
+let g:ale_javascript_prettier_options = '--trailing-comma none'
 let g:ale_fix_on_save = 1
 let g:ale_lint_on_enter = 0
 let g:ale_lint_on_text_changed = 'never'
@@ -170,9 +185,10 @@ inoremap <leader>, <esc>:Files<cr>
 vnoremap <leader>, <esc>:Files<cr>
 
 nnoremap <leader>h :History<cr>
-nnoremap <leader>c :History:<cr>
+nnoremap <leader>ch :History:<cr>
 nnoremap <leader>b :Buffers<cr>
 nnoremap <leader>w :Wipeouts<cr>
+nnoremap <leader>c :Commands<cr>
 nnoremap <silent> <Leader>f :Rg<CR>
 " To exclude file name for FZF and ripgrep searching
 command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
@@ -181,7 +197,7 @@ command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-hea
 "Plugin: NERDTree
 "----------------------------------------------------------------------
 " automatically open NERDTree when vim start
-autocmd VimEnter * NERDTree
+"autocmd VimEnter * NERDTree
 nnoremap <C-n> :NERDTreeToggle<CR>
 let NERDTreeShowHidden=1
 
@@ -225,6 +241,27 @@ let g:go_addtags_transform = "snakecase"
 
 " Debugging
 let g:delve_backend = "native"
+
+" Go binding
+let g:go_decls_includes = "func,type"
+let g:go_diagnostics_enabled = 1
+
+augroup go
+  autocmd!
+
+  autocmd FileType go nmap <silent> <Leader>gop  <Plug>(go-doc-browser)
+  autocmd FileType go nmap <silent> <Leader>go  <Plug>(go-doc)
+  autocmd FileType go nmap <silent> <Leader>gf  <Plug>(go-referrers)
+  autocmd FileType go nmap <silent> <Leader>gd  <Plug>(go-decls)
+  autocmd FileType go nmap <silent> <Leader>gl  <Plug>(go-metalinter)
+  autocmd FileType go nmap <silent> <Leader>gr  <Plug>(go-run)
+  autocmd FileType go nmap <silent> <leader>i  <Plug>(go-info)
+  autocmd FileType go nmap <silent> <leader>gi  <Plug>(go-imports)
+  autocmd FileType go nmap <silent> <leader>t :GoTest<return>
+  autocmd FileType go nmap <silent> <leader>tf  <Plug>(go-test-func)
+  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+augroup END
 
 " Autocomplete (coc.NVIM)
 " -------------------------------------------------------------------------------------------------
