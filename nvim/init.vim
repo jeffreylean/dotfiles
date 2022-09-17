@@ -106,6 +106,8 @@ nnoremap <esc> :noh<return><esc>
 au BufNewFile,BufRead *.jsx setf javascript
 " Typescript
 au BufNewFile,BufRead *.tsx setf typescriptreact
+" Rustlang
+au BufNewFile,BufRead *.rs setf rust
 " Markdown
 au BufNewFile,BufRead *.md setf markdown
 au BufNewFile,BufRead *.mdx setf markdown
@@ -149,11 +151,13 @@ let g:ale_fixers = {
   \    'html': ['prettier'],
   \    'reason': ['refmt'],
 \   '*': ['remove_trailing_lines', 'trim_whitespace'],
+  \    'rust': ['rustfmt'],
 \}
 
 let g:ale_linters = {
 \ 'go': ['gopls'],
 \   'javascript': ['tsserver'],
+\   'rust': ['rust-analyzer'],
 \ }
 let g:ale_linters_explicit = 1
 let g:ale_lint_on_save = 1
@@ -161,7 +165,7 @@ let g:ale_javascript_prettier_options = '--trailing-comma none'
 let g:ale_fix_on_save = 1
 let g:ale_lint_on_enter = 0
 let g:ale_lint_on_text_changed = 'never'
-
+let g:ale_completion_enabled = 1
 " Error and warning signs.
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = ''
@@ -263,11 +267,16 @@ augroup go
 autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
 augroup END
 
-" Autocomplete (coc.NVIM)
-" -------------------------------------------------------------------------------------------------
-" coc.nvim default settings
-" -------------------------------------------------------------------------------------------------
+"----------------------------------------------------------------------
+" language: rustlang
+"----------------------------------------------------------------------
+let g:rustfmt_autosave = 1
 
+"" Autocomplete (coc.NVIM)
+"" -------------------------------------------------------------------------------------------------
+"" coc.nvim default settings
+"" -------------------------------------------------------------------------------------------------
+"
 ""augroup cocgo
 ""        autocmd BufWrite *.go :CocRestart
 ""augroup END
@@ -285,11 +294,16 @@ augroup END
 "
 "" Use tab for trigger completion with characters ahead and navigate.
 "" Use command ':verbose imap <tab>' to make sure tab is not mapped by other plugin.
+"
+"inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+"inoremap <silent><expr> <C-x><C-z> coc#pum#visible() ? coc#pum#stop() : "\<C-x>\<C-z>"
+"" remap for complete to use tab and <cr>
 "inoremap <silent><expr> <TAB>
-"      \ pumvisible() ? "\<C-n>" :
-"      \ <SID>check_back_space() ? "\<TAB>" :
-"      \ coc#refresh()
-"inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+"    \ coc#pum#visible() ? coc#pum#next(1):
+"    \ <SID>check_back_space() ? "\<Tab>" :
+"    \ coc#refresh()
+"inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+"inoremap <silent><expr> <c-space> coc#refresh()
 "
 "function! s:check_back_space() abort
 "  let col = col('.') - 1

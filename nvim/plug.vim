@@ -19,6 +19,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'preservim/nerdtree'
 Plug 'hashivim/vim-terraform'
 " Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+Plug 'rust-lang/rust.vim' , {'for':'rust'}
 
 
 " let g:coc_global_extensions = ['coc-tslint-plugin', 'coc-tsserver', 'coc-css', 'coc-html', 'coc-json', 'coc-prettier','coc-go']  " list of CoC extensions needed

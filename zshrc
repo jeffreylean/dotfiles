@@ -30,3 +30,5 @@ alias swagger='docker run --rm -it  --user $(id -u):$(id -g) -e GOPATH=$(go env 
 plugins=(git kubectl)
 
 alias fketi="kgp --no-headers | awk '{print "\$"1}' | fzf --preview 'kubectl get pod {} -o yaml'| xargs -o -I % kubectl exec -it % -- /bin/sh"
+
+export PATH=$PATH:/Users/jeffreylean/.cargo/bin
