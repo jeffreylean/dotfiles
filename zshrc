@@ -4,7 +4,11 @@ source $(brew --prefix nvm)/nvm.sh
 export GO111MODULE=on
 export PATH=$PATH:/usr/local/go/bin
 export PATH=$PATH:/Users/jeffreylean/go/bin
-export GOPRIVATE=gitlab.revenuemonster.my/*,gitlab.airasiatech.com/*
+export GOPRIVATE=gitlab.airasiatech.com/*
+export GOPATH=$(go env GOPATH)
+export USE_GKE_GCLOUD_AUTH_PLUGIN=True
+export PATH=$PATH:/Users/jeffreylean/.local/bin
+
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/jeffreylean/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/jeffreylean/google-cloud-sdk/path.zsh.inc'; fi

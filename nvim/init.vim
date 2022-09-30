@@ -104,10 +104,10 @@ nnoremap <esc> :noh<return><esc>
 "Create new file type extension
 "  Javascript
 au BufNewFile,BufRead *.jsx setf javascript
-" Typescript
-au BufNewFile,BufRead *.tsx setf typescriptreact
 " Rustlang
 au BufNewFile,BufRead *.rs setf rust
+" Typescript
+au BufNewFile,BufRead *.tsx setf typescript
 " Markdown
 au BufNewFile,BufRead *.md setf markdown
 au BufNewFile,BufRead *.mdx setf markdown
@@ -142,7 +142,7 @@ set completeopt-=preview
 "----------------------------------------------------------------------
 "Plugin: ale
 "----------------------------------------------------------------------
-let g:ale_linter_aliases = {'jsx': 'javascript'}
+let g:ale_linter_aliases = {'jsx': 'javascript','ts':'typescript','tsx':'typescript'}
 let g:ale_fixers = {
 \   'javascript': ['prettier', 'eslint'],
   \    'typescript': ['prettier', 'tslint'],
@@ -158,6 +158,7 @@ let g:ale_linters = {
 \ 'go': ['gopls'],
 \   'javascript': ['tsserver'],
 \   'rust': ['rust-analyzer'],
+\   'typescript': ['tsserver','tslint','eslint'],
 \ }
 let g:ale_linters_explicit = 1
 let g:ale_lint_on_save = 1
@@ -166,6 +167,8 @@ let g:ale_fix_on_save = 1
 let g:ale_lint_on_enter = 0
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_completion_enabled = 1
+let g:ale_history_log_output = 1
+
 " Error and warning signs.
 let g:ale_sign_error = '✘'
 let g:ale_sign_warning = ''
