@@ -14,6 +14,12 @@ lvim.format_on_save = false
 lvim.colorscheme = "solarized"
 lvim.transparent_window = true
 
+local nvimtree = lvim.builtin.nvimtree
+nvimtree.setup.update_focused_file.update_cwd = false
+
+local project = lvim.builtin.project
+project.manual_mode = true
+
 local formatters = require "lvim.lsp.null-ls.formatters"
 formatters.setup {
     { command = "black" },
@@ -84,6 +90,7 @@ lvim.leader = ","
 lvim.keys.normal_mode["<C-s>"] = ":w<cr>"
 lvim.keys.normal_mode["<C-n>"] = ":bn<cr>"
 lvim.keys.normal_mode["<leader><leader>"] = ":Telescope live_grep<cr>"
+lvim.keys.normal_mode["<leader>b"] = ":Telescope buffers<cr>"
 -- lvim.keys.normal_mode["<S-l>"] = ":BufferLineCycleNext<CR>"
 -- lvim.keys.normal_mode["<S-h>"] = ":BufferLineCyclePrev<CR>"
 -- unmap a default keymapping
