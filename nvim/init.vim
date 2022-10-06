@@ -97,7 +97,7 @@ let g:go_auto_type_info = 1
 
 " disable vim-go :GoDef short cut (gd)
 " this is handled by LanguageClient [LC]
-"let g:go_def_mapping_enabled = 0
+let g:go_def_mapping_enabled = 0
 "JSON tag stuct
 "let g:go_addtags_transform = "snakecase"
 
