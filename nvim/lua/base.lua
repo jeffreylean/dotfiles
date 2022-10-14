@@ -24,7 +24,7 @@ vim.opt.laststatus = 2
 vim.opt.expandtab = true
 vim.opt.scrolloff = 10
 vim.opt.inccommand = 'split'
-vim.opt.ignorecase = true  -- Case insensitive searching UNLESS /C or capital in search
+vim.opt.ignorecase = true -- Case insensitive searching UNLESS /C or capital in search
 vim.opt.smarttab = true
 vim.opt.breakindent = true
 vim.opt.shiftwidth = 4
@@ -36,4 +36,4 @@ vim.opt.formatoptions:append { 'r' }
 vim.opt.splitbelow = true
 vim.opt.splitright = true
 -- Vim will use ripgrep instead of grep
-vim.opt.grepprg='rg\\ --vimgrep\\ --smart-case\\ --follow'
+vim.opt.grepprg = 'rg\\ --vimgrep\\ --smart-case\\ --follow'

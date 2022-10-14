@@ -1,4 +1,4 @@
-local status,packer = pcall(require,'packer')
+local status, packer = pcall(require, 'packer')
 if (not status) then
     print("Packer is not installed")
     return
@@ -8,18 +8,17 @@ vim.cmd [[packadd packer.nvim]]
 
 packer.startup(function(use)
     use 'wbthomason/packer.nvim'
-   -- use {
-   --     'svrana/neosolarized.nvim',
-   --     requires = { 'tjdevries/colorbuddy.nvim' }
-   -- }
-    use {
-        'folke/tokyonight.nvim',
+    -- use {
+    --     'svrana/neosolarized.nvim',
+    --     requires = { 'tjdevries/colorbuddy.nvim' }
+    -- }
+    use { 'folke/tokyonight.nvim',
         requires = { 'tjdevries/colorbuddy.nvim' }
     }
     -- Status line
     use {
-      'nvim-lualine/lualine.nvim',
-      requires = { 'kyazdani42/nvim-web-devicons', opt = true }
+        'nvim-lualine/lualine.nvim',
+        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
     }
     use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
     use 'hrsh7th/nvim-cmp' -- autocomplete
@@ -33,4 +32,9 @@ packer.startup(function(use)
     }
     use 'windwp/nvim-autopairs'
     use 'windwp/nvim-ts-autotag'
+    use {
+        'jose-elias-alvarez/null-ls.nvim',
+        requires = { "nvim-lua/plenary.nvim" },
+    }
+    use 'MunifTanjim/prettier.nvim'
 end)

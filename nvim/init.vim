@@ -108,27 +108,27 @@ let g:delve_backend = "native"
 let g:go_decls_includes = "func,type"
 let g:go_diagnostics_enabled = 1
 
-augroup go
-  autocmd!
-
-  autocmd FileType go nmap <silent> <Leader>gop  <Plug>(go-doc-browser)
-  autocmd FileType go nmap <silent> <Leader>go  <Plug>(go-doc)
-  autocmd FileType go nmap <silent> <Leader>gf  <Plug>(go-referrers)
-  autocmd FileType go nmap <silent> <Leader>gd  <Plug>(go-decls)
-  autocmd FileType go nmap <silent> <Leader>gl  <Plug>(go-metalinter)
-  autocmd FileType go nmap <silent> <Leader>gr  <Plug>(go-run)
-  autocmd FileType go nmap <silent> <leader>i  <Plug>(go-info)
-  autocmd FileType go nmap <silent> <leader>gi  <Plug>(go-imports)
-  autocmd FileType go nmap <silent> <leader>t :GoTest<return>
-  autocmd FileType go nmap <silent> <leader>tf  <Plug>(go-test-func)
-  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-augroup END
+"augroup go
+"  autocmd!
+"
+"  autocmd FileType go nmap <silent> <Leader>gop  <Plug>(go-doc-browser)
+"  autocmd FileType go nmap <silent> <Leader>go  <Plug>(go-doc)
+"  autocmd FileType go nmap <silent> <Leader>gf  <Plug>(go-referrers)
+"  autocmd FileType go nmap <silent> <Leader>gd  <Plug>(go-decls)
+"  autocmd FileType go nmap <silent> <Leader>gl  <Plug>(go-metalinter)
+"  autocmd FileType go nmap <silent> <Leader>gr  <Plug>(go-run)
+"  autocmd FileType go nmap <silent> <leader>i  <Plug>(go-info)
+"  autocmd FileType go nmap <silent> <leader>gi  <Plug>(go-imports)
+"  autocmd FileType go nmap <silent> <leader>t :GoTest<return>
+"  autocmd FileType go nmap <silent> <leader>tf  <Plug>(go-test-func)
+"  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+"autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+"augroup END
 
 "----------------------------------------------------------------------
 " language: rustlang
 "----------------------------------------------------------------------
-let g:rustfmt_autosave = 1
+" let g:rustfmt_autosave = 1
 
 "" Autocomplete (coc.NVIM)
 "" -------------------------------------------------------------------------------------------------

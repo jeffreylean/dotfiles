@@ -1,0 +1,16 @@
+--local status,pt = pcall(require, 'prettier')
+--if not status then return end
+--
+--pt.setup {
+--    bin = 'prettierd',
+--    filetypes = {
+--        'css',
+--        'javascript',
+--        'javascriptreact',
+--        'typescript',
+--        'typescriptreact',
+--        'json',
+--        'scss',
+--        'less'
+--    }
+--}
