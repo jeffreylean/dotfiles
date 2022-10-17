@@ -4,6 +4,7 @@ lua require('maps')
 lua require('macos')
 lua require('plugins')
 
+
 " Go to tab by number
 noremap <leader>1 1gt
 noremap <leader>2 2gt
@@ -60,8 +61,8 @@ command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-hea
 "----------------------------------------------------------------------
 " automatically open NERDTree when vim start
 "autocmd VimEnter * NERDTree
-nnoremap <C-n> :NERDTreeToggle<CR>
-let NERDTreeShowHidden=1
+"nnoremap <C-n> :NERDTreeToggle<CR>
+"let NERDTreeShowHidden=1
 
 "----------------------------------------------------------------------
 " language: golang
@@ -218,7 +219,7 @@ runtime ./plug.vim
 " ---------------------------------------------------------------------
 "  Icon
 " ---------------------------------------------------------------------
-let g:webdevicons_enable_ctrlp = 1
+"let g:webdevicons_enable_ctrlp = 1
 
 " ---------------------------------------------------------------------
 " Extras

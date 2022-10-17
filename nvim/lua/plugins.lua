@@ -5,7 +5,6 @@ if (not status) then
 end
 
 vim.cmd [[packadd packer.nvim]]
-
 packer.startup(function(use)
     use 'wbthomason/packer.nvim'
     -- use {
@@ -37,4 +36,12 @@ packer.startup(function(use)
         requires = { "nvim-lua/plenary.nvim" },
     }
     use 'MunifTanjim/prettier.nvim'
+    use {
+        'nvim-tree/nvim-tree.lua',
+        requires = {
+            'kyazdani42/nvim-web-devicons', -- optional, for file icons
+        },
+        tag = 'nightly' -- optional, updated every week. (see issue #1193)
+    }
+    use 'kyazdani42/nvim-web-devicons' --file icons
 end)

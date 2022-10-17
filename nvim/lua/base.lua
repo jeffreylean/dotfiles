@@ -37,3 +37,7 @@ vim.opt.splitbelow = true
 vim.opt.splitright = true
 -- Vim will use ripgrep instead of grep
 vim.opt.grepprg = 'rg\\ --vimgrep\\ --smart-case\\ --follow'
+
+--nvim tree plugins
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
