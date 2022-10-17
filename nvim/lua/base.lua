@@ -41,3 +41,5 @@ vim.opt.grepprg = 'rg\\ --vimgrep\\ --smart-case\\ --follow'
 --nvim tree plugins
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
+
+vim.o.updatetime = 750

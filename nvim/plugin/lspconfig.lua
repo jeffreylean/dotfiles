@@ -35,10 +35,25 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', 'gr', '<Cmd>lua vim.lsp.buf.references()<CR>', opts)
     buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
     buf_set_keymap('n', 'K', '<Cmd>lua vim.lsp.buf.hover()<CR>', opts)
+
+    -- Show line diagnostics automatically in hover window
+    vim.api.nvim_create_autocmd("CursorHold", {
+        buffer = bufnr,
+        callback = function()
+            local opts = {
+                focusable = false,
+                close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+                border = 'rounded',
+                source = 'always',
+                prefix = ' ',
+                scope = 'cursor',
+            }
+            vim.diagnostic.open_float(nil, opts)
+        end
+    })
 end
 
-protocol.CompletionItemKind = {
-    '', -- Text
+protocol.CompletionItemKind = { '', -- Text
     '', -- Method
     '', -- Function
     '', -- Constructor
@@ -72,7 +87,7 @@ local capabilities = require('cmp_nvim_lsp').default_capabilities(
 
 lsp.flow.setup {
     on_attach = on_attach,
-    capabilities = capabilities
+    capabilities = capabilities,
 }
 
 -- typescript
@@ -107,3 +122,14 @@ lsp.sumneko_lua.setup {
 lsp.gopls.setup {
     on_attach = on_attach
 }
+
+
+
+-- disable virtual text
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, {
+    virtual_text = false,
+    signs = true,
+    update_in_insert = true,
+}
+)
