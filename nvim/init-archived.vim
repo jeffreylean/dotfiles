@@ -40,26 +40,26 @@ if &term =~ "screen"
   autocmd VimLeave * silent!  exe '!echo -n "\ek[`hostname`:`basename $PWD`]\e\\"'
 endif
 
-"----------------------------------------------------------------------
-"Plugin: fzf bind
-"----------------------------------------------------------------------
-nnoremap <leader>, :Files<cr>
-inoremap <leader>, <esc>:Files<cr>
-vnoremap <leader>, <esc>:Files<cr>
-
-nnoremap <leader>h :History<cr>
-nnoremap <leader>ch :History:<cr>
-nnoremap <leader>b :Buffers<cr>
-nnoremap <leader>w :Wipeouts<cr>
-nnoremap <leader>c :Commands<cr>
-nnoremap <silent> <Leader>f :Rg<CR>
-" To exclude file name for FZF and ripgrep searching
-command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
-" To ignore files in fzf search 
-command! -bang -nargs=* Rg
-  \ call fzf#vim#grep(
-  \   "rg  -g '!yarn.lock' -g '!dist/' -g '!pnpm-lock.yaml' -g '!.git' -g '!node_modules' --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,
-  \   fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}), <bang>0)
+""----------------------------------------------------------------------
+""Plugin: fzf bind
+""----------------------------------------------------------------------
+"nnoremap <leader>, :Files<cr>
+"inoremap <leader>, <esc>:Files<cr>
+"vnoremap <leader>, <esc>:Files<cr>
+"
+"nnoremap <leader>h :History<cr>
+"nnoremap <leader>ch :History:<cr>
+"nnoremap <leader>b :Buffers<cr>
+"nnoremap <leader>w :Wipeouts<cr>
+"nnoremap <leader>c :Commands<cr>
+"nnoremap <silent> <Leader>f :Rg<CR>
+"" To exclude file name for FZF and ripgrep searching
+"command! -bang -nargs=* Rg call fzf#vim#grep("rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1, {'options': '--delimiter : --nth 4..'}, <bang>0)
+"" To ignore files in fzf search 
+"command! -bang -nargs=* Rg
+"  \ call fzf#vim#grep(
+"  \   "rg  -g '!yarn.lock' -g '!dist/' -g '!pnpm-lock.yaml' -g '!.git' -g '!node_modules' --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>), 1,
+"  \   fzf#vim#with_preview({'options': '--exact --delimiter : --nth 4..'}), <bang>0)
 
 "----------------------------------------------------------------------
 "Plugin: NERDTree

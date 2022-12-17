@@ -19,7 +19,12 @@ packer.startup(function(use)
         'nvim-lualine/lualine.nvim',
         requires = { 'kyazdani42/nvim-web-devicons', opt = true }
     }
-    use 'neovim/nvim-lspconfig' -- Configurations for Nvim LSP
+    use { 'neovim/nvim-lspconfig',
+        requires = {
+            -- Useful status updates for LSP
+            'j-hui/fidget.nvim',
+        }
+    } -- Configurations for Nvim LSP
     use 'hrsh7th/nvim-cmp' -- autocomplete
     use 'hrsh7th/cmp-buffer'
     use 'hrsh7th/cmp-nvim-lsp'
@@ -44,4 +49,15 @@ packer.startup(function(use)
         tag = 'nightly' -- optional, updated every week. (see issue #1193)
     }
     use 'kyazdani42/nvim-web-devicons' --file icons
+
+    -- Git related plugins
+    use 'tpope/vim-fugitive'
+    use 'tpope/vim-rhubarb'
+    use 'lewis6991/gitsigns.nvim'
+
+    -- Fuzzy Finder (files, lsp, etc)
+    use { 'nvim-telescope/telescope.nvim', branch = '0.1.x', requires = { 'nvim-lua/plenary.nvim' } }
+
+    -- Fuzzy Finder Algorithm which requires local dependencies to be built. Only load if `make` is available
+    use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
 end)

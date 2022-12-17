@@ -1,14 +1,23 @@
-local status, treesitter = pcall(require,'nvim-treesitter.configs')
+local status, treesitter = pcall(require, 'nvim-treesitter.configs')
 if not status then return end
 
-treesitter.setup{
+treesitter.setup {
     highlight = {
         enable = true,
         disable = {},
     },
-    indent ={
+    indent = {
         enable = true,
         disable = {}
+    },
+    incremental_selection = {
+        enable = true,
+        keymaps = {
+            init_selection = '<c-space>',
+            node_incremental = '<c-space>',
+            scope_incremental = '<c-s>',
+            node_decremental = '<c-backspace>',
+        },
     },
     ensure_installed = {
         'tsx',
@@ -24,4 +33,3 @@ treesitter.setup{
         enable = true,
     }
 }
-
