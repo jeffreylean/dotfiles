@@ -71,6 +71,16 @@ local on_attach = function(client, bufnr)
             vim.diagnostic.open_float(nil, opts)
         end
     })
+
+
+    -- Create a command `:Format` local to the LSP buffer
+    vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
+        if vim.lsp.buf.format then
+            vim.lsp.buf.format()
+        elseif vim.lsp.buf.formatting then
+            vim.lsp.buf.formatting()
+        end
+    end, { desc = 'Format current buffer with LSP' })
 end
 
 protocol.CompletionItemKind = { '', -- Text
@@ -148,7 +158,10 @@ lsp.gopls.setup {
 
 -- rust
 lsp.rust_analyzer.setup {
-    on_attach = on_attach,
+    on_attach = function(client, bufnr)
+        on_attach(client, bufnr)
+        enable_format_on_save(client, bufnr)
+    end,
     settings = {
         ["rust-analyzer"] = {
             imports = {
