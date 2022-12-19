@@ -153,7 +153,10 @@ lsp.sumneko_lua.setup {
 }
 -- go
 lsp.gopls.setup {
-    on_attach = on_attach
+    on_attach = function(client, bufnr)
+        on_attach(client, bufnr)
+        enable_format_on_save(client, bufnr)
+    end,
 }
 
 -- rust
