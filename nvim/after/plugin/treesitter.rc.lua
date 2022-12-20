@@ -27,7 +27,10 @@ treesitter.setup {
         'go',
         'rust',
         'javascript',
-        'typescript'
+        'typescript',
+        'gomod',
+        'gowork',
+        'dockerfile',
     },
     autotag = {
         enable = true,

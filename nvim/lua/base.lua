@@ -58,15 +58,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     pattern = '*',
 })
 
--- add syntax highlighting for dockerfile.* extension format
+-- set docker extension (Dockerfile.xxx) as dockerfile filetype
 vim.cmd [[
-au BufReadPost Dockerfile* set syntax=dockerfile
+au BufReadPost Dockerfile* set filetype=dockerfile
 ]]
-
--- add syntax highlighting for go.mod and go.sum extension format
-vim.api.nvim_create_autocmd('BufReadPost', {
-    pattern = 'go.*',
-    callback = function()
-        vim.bo.filetype = "go"
-    end
-})
