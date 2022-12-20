@@ -9,6 +9,13 @@ require('telescope').setup {
             },
         },
     },
+    pickers = {
+        -- sort buffer in last used order
+        buffers = {
+            ignore_current_buffer = true,
+            sort_lastused = true,
+        }
+    }
 }
 
 -- Enable telescope fzf native, if installed
