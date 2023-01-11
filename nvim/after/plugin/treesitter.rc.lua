@@ -31,6 +31,7 @@ treesitter.setup {
         'gomod',
         'gowork',
         'dockerfile',
+        'hcl',
     },
     autotag = {
         enable = true,
