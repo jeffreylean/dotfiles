@@ -210,6 +210,9 @@ lsp.rust_analyzer.setup {
     }
 }
 
+-- python
+lsp.pyright.setup {}
+
 
 
 -- disable virtual text
