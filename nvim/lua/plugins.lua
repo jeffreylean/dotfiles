@@ -62,4 +62,9 @@ packer.startup(function(use)
     use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
     -- Coding productivity for developers
     use 'wakatime/vim-wakatime'
+    -- Markdown preview
+    use({
+        "iamcco/markdown-preview.nvim",
+        run = function() vim.fn["mkdp#util#install"]() end,
+    })
 end)
