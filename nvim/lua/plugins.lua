@@ -34,6 +34,8 @@ packer.startup(function(use)
         'nvim-treesitter/nvim-treesitter',
         run = ':TSUpdate'
     }
+    -- Adds extra functionality over rust analyzer
+    use("simrat39/rust-tools.nvim")
     use 'windwp/nvim-autopairs'
     use 'windwp/nvim-ts-autotag'
     use {

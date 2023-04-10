@@ -185,30 +185,43 @@ lsp.gopls.setup {
 }
 
 -- rust
-lsp.rust_analyzer.setup {
-    on_attach = function(client, bufnr)
-        on_attach(client, bufnr)
-        enable_format_on_save(client, bufnr)
-    end,
-    settings = {
-        ["rust-analyzer"] = {
-            imports = {
-                granularity = {
-                    group = "module",
+-- Configure LSP through rust-tools.nvim plugin.
+-- rust-tools will configure and enable certain LSP features for us.
+-- See https://github.com/simrat39/rust-tools.nvim#configuration
+local opts = {
+    tools = {
+        runnables = {
+            use_telescope = true,
+        },
+        inlay_hints = {
+            auto = true,
+            show_parameter_hints = false,
+            parameter_hints_prefix = "",
+            other_hints_prefix = "",
+        },
+    },
+
+    -- all the opts to send to nvim-lspconfig
+    -- these override the defaults set by rust-tools.nvim
+    -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
+    server = {
+        on_attach = function(client, bufnr)
+            on_attach(client, bufnr)
+            enable_format_on_save(client, bufnr)
+        end,
+        settings = {
+            -- to enable rust-analyzer settings visit:
+            -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+            ["rust-analyzer"] = {
+                -- enable clippy on save
+                checkOnSave = {
+                    command = "clippy",
                 },
-                prefix = "self",
             },
-            cargo = {
-                buildScripts = {
-                    enable = true,
-                },
-            },
-            proMacro = {
-                enable = true
-            },
-        }
-    }
+        },
+    },
 }
+require("rust-tools").setup(opts)
 
 -- python
 lsp.pyright.setup {}
@@ -216,10 +229,10 @@ lsp.pyright.setup {}
 
 
 -- disable virtual text
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-    vim.lsp.diagnostic.on_publish_diagnostics, {
-    virtual_text = false,
-    signs = true,
-    update_in_insert = true,
-}
-)
+--vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+--    vim.lsp.diagnostic.on_publish_diagnostics, {
+--    virtual_text = false,
+--    signs = true,
+--    update_in_insert = true,
+--}
+--)
