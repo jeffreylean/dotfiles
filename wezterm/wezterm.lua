@@ -16,6 +16,9 @@ end
 config.color_scheme = 'tokyonight_storm'
 config.window_background_opacity = 0.95
 
+-- Font size
+config.font_size = 15.5
+
 
 -- and finally, return the configuration to wezterm
 return config
