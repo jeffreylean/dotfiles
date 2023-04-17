@@ -19,6 +19,9 @@ config.window_background_opacity = 0.95
 -- Font size
 config.font_size = 15.5
 
+-- Disable dead key, because Vi need `^` single keypress
+config.use_dead_keys = false
+
 
 -- and finally, return the configuration to wezterm
 return config
