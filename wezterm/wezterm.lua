@@ -21,6 +21,17 @@ config.font_size = 15.5
 
 -- Disable dead key, because Vi need `^` single keypress
 config.use_dead_keys = false
+config.debug_key_events = true
+
+config.keys = {
+    -- Turn off the default SHIFT-CTRL-^ Hide action, allowing CMD-SHIFT-^ to
+    -- be potentially recognized and handled by vim
+    {
+        key = '^',
+        mods = 'SHIFT|CTRL',
+        action = wezterm.action.DisableDefaultAssignment,
+    },
+}
 
 
 -- and finally, return the configuration to wezterm
