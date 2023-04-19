@@ -73,4 +73,9 @@ packer.startup(function(use)
     use { "akinsho/toggleterm.nvim", tag = '*', config = function()
         require("toggleterm").setup()
     end }
+    -- Debug adapter protocol
+    use 'mfussenegger/nvim-dap'
+    -- LSP manager
+    use 'williamboman/mason.nvim'
+    use 'williamboman/mason-lspconfig.nvim'
 end)
