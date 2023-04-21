@@ -85,30 +85,30 @@ local on_attach = function(client, bufnr)
 end
 
 protocol.CompletionItemKind = { '', -- Text
-    '', -- Method
-    '', -- Function
-    '', -- Constructor
-    '', -- Field
-    '', -- Variable
-    '', -- Class
-    'ﰮ', -- Interface
-    '', -- Module
-    '', -- Property
-    '', -- Unit
-    '', -- Value
-    '', -- Enum
-    '', -- Keyword
-    '﬌', -- Snippet
-    '', -- Color
-    '', -- File
-    '', -- Reference
-    '', -- Folder
-    '', -- EnumMember
-    '', -- Constant
-    '', -- Struct
-    '', -- Event
-    'ﬦ', -- Operator
-    '', -- TypeParameter
+    '',                           -- Method
+    '',                           -- Function
+    '',                           -- Constructor
+    '',                           -- Field
+    '',                           -- Variable
+    '',                           -- Class
+    'ﰮ',                           -- Interface
+    '',                           -- Module
+    '',                           -- Property
+    '',                           -- Unit
+    '',                           -- Value
+    '',                           -- Enum
+    '',                           -- Keyword
+    '﬌',                           -- Snippet
+    '',                           -- Color
+    '',                           -- File
+    '',                           -- Reference
+    '',                           -- Folder
+    '',                           -- EnumMember
+    '',                           -- Constant
+    '',                           -- Struct
+    '',                           -- Event
+    'ﬦ',                           -- Operator
+    '',                           -- TypeParameter
 }
 
 -- Set up completion using nvim_cmp with LSP source
@@ -126,7 +126,10 @@ lsp.flow.setup {
 
 -- typescript
 lsp.tsserver.setup {
-    on_attach = on_attach,
+    on_attach = function(client, bufnr)
+        on_attach(client, bufnr)
+        enable_format_on_save(client, bufnr)
+    end,
     filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
     cmd = { "typescript-language-server", "--stdio" }
 }
@@ -143,7 +146,6 @@ lsp.sumneko_lua.setup {
                 -- Get the language server to recognize the `vim` global
                 globals = { 'vim' },
             },
-
             workspace = {
                 -- Make the server aware of Neovim runtime files
                 library = vim.api.nvim_get_runtime_file("", true),
@@ -200,7 +202,6 @@ local opts = {
             other_hints_prefix = "",
         },
     },
-
     -- all the opts to send to nvim-lspconfig
     -- these override the defaults set by rust-tools.nvim
     -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
