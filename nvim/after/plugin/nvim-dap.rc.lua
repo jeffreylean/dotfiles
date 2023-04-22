@@ -9,6 +9,7 @@ vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
 vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
 vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
 vim.keymap.set('n', '<Leader>B', function() require('dap').toggle_breakpoint() end)
+vim.keymap.set('n', '<Leader>dr', function() require('dap').clear_breakpoints() end)
 
 vim.keymap.set({ 'n', 'v' }, '<Leader>dh', function()
     require('dap.ui.widgets').hover()
@@ -32,7 +33,6 @@ dap.adapters.codelldb = {
         -- CHANGE THIS to your path!
         command = codelldb:get_install_path() .. "/codelldb",
         args = { "--port", "${port}" },
-
         -- On windows you may have to uncomment this:
         -- detached = false,
     }
