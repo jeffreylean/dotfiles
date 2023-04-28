@@ -1,4 +1,14 @@
-local dap = require('dap')
+local dap, dapui = require('dap'), require('dapui')
+
+dap.listeners.after.event_initialized["dapui_config"] = function()
+    dapui.open()
+end
+dap.listeners.before.event_terminated["dapui_config"] = function()
+    dapui.close()
+end
+dap.listeners.before.event_exited["dapui_config"] = function()
+    dapui.close()
+end
 
 local mason_registry = require("mason-registry")
 local codelldb = mason_registry.get_package("codelldb") -- note that this will error if you provide a non-existent package name

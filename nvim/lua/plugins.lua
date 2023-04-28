@@ -75,6 +75,7 @@ packer.startup(function(use)
     end }
     -- Debug adapter protocol
     use 'mfussenegger/nvim-dap'
+    use 'rcarriga/nvim-dap-ui'
     -- LSP manager
     use 'williamboman/mason.nvim'
     use 'williamboman/mason-lspconfig.nvim'
