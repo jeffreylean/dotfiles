@@ -1,6 +1,7 @@
 theme = "tokyonight_storm"
 
 [editor]
+true-color = true
 line-number = "relative"
 shell = ["zsh","-c"]
 
@@ -14,3 +15,6 @@ select = "underline"
 
 [editor.file-picker]
 hidden = false
+
+[editor.lsp]
+display-messages = true
