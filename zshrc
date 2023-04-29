@@ -36,3 +36,4 @@ plugins=(git kubectl)
 alias fketi="kgp --no-headers | awk '{print "\$"1}' | fzf --preview 'kubectl get pod {} -o yaml'| xargs -o -I % kubectl exec -it % -- /bin/sh"
 
 export PATH=$PATH:/Users/jeffreylean/.cargo/bin
+export PATH=$PATH:/Users/jeffreylean/.local/share/nvim/mason/bin
