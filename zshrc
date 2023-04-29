@@ -37,3 +37,4 @@ alias fketi="kgp --no-headers | awk '{print "\$"1}' | fzf --preview 'kubectl get
 
 export PATH=$PATH:/Users/jeffreylean/.cargo/bin
 export PATH=$PATH:/Users/jeffreylean/.local/share/nvim/mason/bin
+export PATH=$PATH:/opt/homebrew/Cellar/llvm/16.0.2/bin
