@@ -14,7 +14,7 @@ end
 
 -- For example, changing the color scheme:
 config.color_scheme = 'tokyonight_storm'
-config.window_background_opacity = 0.95
+--config.window_background_opacity = 0.95
 
 -- Font size
 config.font_size = 15.5
