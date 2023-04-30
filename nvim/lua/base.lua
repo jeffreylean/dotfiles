@@ -10,7 +10,7 @@ vim.wo.relativenumber = true
 vim.bo.swapfile = false
 
 -- leader key
-vim.g.mapleader = ','
+vim.g.mapleader = ' '
 
 vim.opt.title = true
 vim.opt.autoindent = true
