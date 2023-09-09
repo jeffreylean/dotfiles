@@ -33,7 +33,15 @@ config.keys = {
     },
 }
 
+-- Disable adjusting window size while changing font size
 config.adjust_window_size_when_changing_font_size = false
+
+config.window_padding = {
+  left = 1,
+  right = 1,
+  top = 0,
+  bottom = 0,
+}
 
 
 -- and finally, return the configuration to wezterm
