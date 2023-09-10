@@ -24,7 +24,7 @@ packer.startup(function(use)
             -- Useful status updates for LSP
             'j-hui/fidget.nvim',
         }
-    } -- Configurations for Nvim LSP
+    }                      -- Configurations for Nvim LSP
     use 'hrsh7th/nvim-cmp' -- autocomplete
     use 'hrsh7th/cmp-buffer'
     use 'hrsh7th/cmp-nvim-lsp'
@@ -46,11 +46,11 @@ packer.startup(function(use)
     use {
         'nvim-tree/nvim-tree.lua',
         requires = {
-            'kyazdani42/nvim-web-devicons', -- optional, for file icons
+            'nvim-tree/nvim-web-devicons', -- optional, for file icons
         },
-        tag = 'nightly' -- optional, updated every week. (see issue #1193)
+        tag = 'nightly'                    -- optional, updated every week. (see issue #1193)
     }
-    use 'kyazdani42/nvim-web-devicons' --file icons
+    use 'nvim-tree/nvim-web-devicons'      --file icons
 
     -- Git related plugins
     use 'tpope/vim-fugitive'
