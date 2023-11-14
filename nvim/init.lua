@@ -2,12 +2,17 @@ require('base')
 require('highlight')
 require('maps')
 require('macos')
-require('plugins')
 
--- Automatically source and re-compile packer whenever you save this init.lua
-local packer_group = vim.api.nvim_create_augroup('Packer', { clear = true })
-vim.api.nvim_create_autocmd('BufWritePost', {
-    command = 'source <afile> | PackerCompile',
-    group = packer_group,
-    pattern = vim.fn.expand '$MYVIMRC',
-})
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+    vim.fn.system({
+        "git",
+        "clone",
+        "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", -- latest stable release
+        lazypath,
+    })
+end
+vim.opt.rtp:prepend(lazypath)
+require('plugins')

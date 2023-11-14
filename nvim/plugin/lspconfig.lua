@@ -85,30 +85,30 @@ local on_attach = function(client, bufnr)
 end
 
 protocol.CompletionItemKind = { '', -- Text
-    '', -- Method
-    '', -- Function
-    '', -- Constructor
-    '', -- Field
-    '', -- Variable
-    '', -- Class
-    'ﰮ', -- Interface
-    '', -- Module
-    '', -- Property
-    '', -- Unit
-    '', -- Value
-    '', -- Enum
-    '', -- Keyword
-    '﬌', -- Snippet
-    '', -- Color
-    '', -- File
-    '', -- Reference
-    '', -- Folder
-    '', -- EnumMember
-    '', -- Constant
-    '', -- Struct
-    '', -- Event
-    'ﬦ', -- Operator
-    '', -- TypeParameter
+    '',                           -- Method
+    '',                           -- Function
+    '',                           -- Constructor
+    '',                           -- Field
+    '',                           -- Variable
+    '',                           -- Class
+    'ﰮ',                           -- Interface
+    '',                           -- Module
+    '',                           -- Property
+    '',                           -- Unit
+    '',                           -- Value
+    '',                           -- Enum
+    '',                           -- Keyword
+    '﬌',                           -- Snippet
+    '',                           -- Color
+    '',                           -- File
+    '',                           -- Reference
+    '',                           -- Folder
+    '',                           -- EnumMember
+    '',                           -- Constant
+    '',                           -- Struct
+    '',                           -- Event
+    'ﬦ',                           -- Operator
+    '',                           -- TypeParameter
 }
 
 -- Set up completion using nvim_cmp with LSP source
@@ -135,7 +135,8 @@ lsp.tsserver.setup {
 }
 
 -- lua
-lsp.sumneko_lua.setup {
+require("neodev").setup({})
+lsp.lua_ls.setup {
     on_attach = function(client, bufnr)
         on_attach(client, bufnr)
         enable_format_on_save(client, bufnr)
@@ -230,6 +231,13 @@ require("rust-tools").setup(opts)
 
 -- python
 lsp.pyright.setup {}
+
+-- Sourcegraph configuration. All keys are optional
+--require("sg").setup {
+--    on_attach = function(client, bufnr)
+--        on_attach(client, bufnr)
+--    end,
+--}
 
 
 

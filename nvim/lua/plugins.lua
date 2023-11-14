@@ -1,82 +1,87 @@
-local status, packer = pcall(require, 'packer')
-if (not status) then
-    print("Packer is not installed")
-    return
-end
-
-vim.cmd [[packadd packer.nvim]]
-packer.startup(function(use)
-    use 'wbthomason/packer.nvim'
-    -- use {
-    --     'svrana/neosolarized.nvim',
-    --     requires = { 'tjdevries/colorbuddy.nvim' }
-    -- }
-    use { 'folke/tokyonight.nvim',
-        requires = { 'tjdevries/colorbuddy.nvim' }
-    }
+require("lazy").setup({
+    'folke/which-key.nvim',
+    {
+        'folke/tokyonight.nvim',
+        dependencies = { 'tjdevries/colorbuddy.nvim' },
+        lazy = false,
+        priority = 1000,
+        config = function()
+            -- load the colorscheme here
+            vim.cmd([[colorscheme tokyonight]])
+        end,
+    },
     -- Status line
-    use {
-        'nvim-lualine/lualine.nvim',
-        requires = { 'kyazdani42/nvim-web-devicons', opt = true }
-    }
-    use { 'neovim/nvim-lspconfig',
-        requires = {
+    { 'nvim-lualine/lualine.nvim', dependencies = { 'kyazdani42/nvim-web-devicons', opt = true } },
+    {
+        'neovim/nvim-lspconfig',
+        dependencies = {
             -- Useful status updates for LSP
-            'j-hui/fidget.nvim',
+            { 'j-hui/fidget.nvim', opts = {} },
+            -- Additional lua configuration, makes nvim stuff amazing!
+            'folke/neodev.nvim',
         }
-    }                      -- Configurations for Nvim LSP
-    use 'hrsh7th/nvim-cmp' -- autocomplete
-    use 'hrsh7th/cmp-buffer'
-    use 'hrsh7th/cmp-nvim-lsp'
-    use 'onsails/lspkind.nvim'
-    use 'L3MON4D3/LuaSnip' -- Snippet engine
-    use {
+    },
+    {
+        'hrsh7th/nvim-cmp', -- autocomplete
+        -- load cmp on InsertEnter
+        event = 'InsertEnter',
+        dependencies = {
+            'hrsh7th/cmp-buffer',
+            'hrsh7th/cmp-nvim-lsp',
+        }
+    },
+    'onsails/lspkind.nvim',
+    'L3MON4D3/LuaSnip', -- Snippet engine
+    {
         'nvim-treesitter/nvim-treesitter',
-        run = ':TSUpdate'
-    }
+        build = ':TSUpdate',
+        cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
+    },
     -- Adds extra functionality over rust analyzer
-    use("simrat39/rust-tools.nvim")
-    use 'windwp/nvim-autopairs'
-    use 'windwp/nvim-ts-autotag'
-    use {
+    'simrat39/rust-tools.nvim',
+    'windwp.nvim-autopairs',
+    'windwp.nvim-ts-autotag',
+    {
         'jose-elias-alvarez/null-ls.nvim',
-        requires = { "nvim-lua/plenary.nvim" },
-    }
-    use 'MunifTanjim/prettier.nvim'
-    use {
+        dependencies = { 'nvim-lua/plenary.nvim' }
+    },
+    'MunifTanjim/prettier.nvim',
+    {
         'nvim-tree/nvim-tree.lua',
-        requires = {
-            'nvim-tree/nvim-web-devicons', -- optional, for file icons
-        },
-        tag = 'nightly'                    -- optional, updated every week. (see issue #1193)
-    }
-    use 'nvim-tree/nvim-web-devicons'      --file icons
-
+        dependencies = {
+            'nvim-tree/nvim-web-devicons',
+        }
+    },
+    'nvim-tree/nvim-web-devicons',
     -- Git related plugins
-    use 'tpope/vim-fugitive'
-    use 'tpope/vim-rhubarb'
-    use 'lewis6991/gitsigns.nvim'
-
-    -- Fuzzy Finder (files, lsp, etc)
-    use { 'nvim-telescope/telescope.nvim', branch = '0.1.x', requires = { 'nvim-lua/plenary.nvim' } }
-
+    'tpope/vim-fugitive',
+    'tpope/vim-rhubarb',
+    'lewis6991/gitsigns.nvim',
+    -- Fuzzy Finder (files,lsp,etc)
+    {
+        'nvim-telescope/telescope.nvim',
+        tag = '0.1.4',
+        dependencies = {
+            'nvim-lua/plenary.nvim'
+        }
+    },
     -- Fuzzy Finder Algorithm which requires local dependencies to be built. Only load if `make` is available
-    use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make', cond = vim.fn.executable 'make' == 1 }
-    -- Coding productivity for developers
-    use 'wakatime/vim-wakatime'
-    -- Markdown preview
-    use({
+    { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make', cond = vim.fn.executable 'make' == 1
+    },
+    {
         "iamcco/markdown-preview.nvim",
-        run = function() vim.fn["mkdp#util#install"]() end,
-    })
-    -- Toggle terminal
-    use { "akinsho/toggleterm.nvim", tag = '*', config = function()
-        require("toggleterm").setup()
-    end }
+        config = function() vim.fn["mkdp#util#install"]() end,
+    },
     -- Debug adapter protocol
-    use 'mfussenegger/nvim-dap'
-    use 'rcarriga/nvim-dap-ui'
+    'mfussenegger/nvim-dap',
+    'rcarriga/nvim-dap-ui',
     -- LSP manager
-    use 'williamboman/mason.nvim'
-    use 'williamboman/mason-lspconfig.nvim'
-end)
+    'williamboman/mason.nvim',
+    'williamboman/mason-lspconfig.nvim',
+    -- Toggle terminal
+    {
+        "akinsho/toggleterm.nvim",
+        version = '*',
+        config = true,
+    }
+})
