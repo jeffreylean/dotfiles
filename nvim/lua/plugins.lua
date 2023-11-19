@@ -35,11 +35,15 @@ require("lazy").setup({
     {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
-        cmd = { "TSUpdateSync", "TSUpdate", "TSInstall" },
+        cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
     },
     -- Adds extra functionality over rust analyzer
     'simrat39/rust-tools.nvim',
-    'windwp.nvim-autopairs',
+    {
+        'windwp/nvim-autopairs',
+        event = 'InsertEnter',
+        opts = {},
+    },
     'windwp.nvim-ts-autotag',
     {
         'jose-elias-alvarez/null-ls.nvim',
