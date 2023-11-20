@@ -145,7 +145,7 @@ set $ws10 "10"
 
 # ALlocate application to workspaces
 assign [class="org.wezfurlong.wezterm"] $ws1
-assign [class="brave-browser"] $ws2
+assign [class="Brave-browser"] $ws2
 for_window [class="Spotify"] move to workspace $ws3
 for_window [class="Slack"] move to workspace $ws4
 
@@ -242,8 +242,6 @@ bar {
 # Display wallpaper
 exec_always feh --bg-fill ~/Pictures/minimalist-wallpaper.png
 
-# Detect laptop lid open/close
-#exec --no-startup-id /home/jeffreylean/.config/i3/lid_monitor.sh
 client.focused #6699CC #6699CC #1B2B34 #6699CC
 client.focused_inactive #5FB3B3 #5FB3B3 #D8DEE9 #A7ADBA
 client.unfocused #343D46 #343D46 #D8DEE9 #343D46
