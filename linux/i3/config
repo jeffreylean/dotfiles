@@ -21,6 +21,12 @@ font pango:monospace 8
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
 
+# Set keyboard layout
+exec_always --no-startup-id setxkbmap us
+
+# Set key repeat rate
+exec_always xset r rate 200 30
+
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
 # they are included here as an example. Modify as you see fit.
 
@@ -232,9 +238,6 @@ bar {
 # Please remove the following exec line:
 #######################################################################
 #exec i3-config-wizard
-
-# Set keyboard layout
-exec --no-startup-id setxkbmap us
 
 # Display wallpaper
 exec_always feh --bg-fill ~/Pictures/minimalist-wallpaper.png
