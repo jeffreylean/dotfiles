@@ -126,16 +126,22 @@ bindsym Mod1+minus scratchpad show
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1"
-set $ws2 "2"
-set $ws3 "3"
-set $ws4 "4"
+set $ws1 "1: terminal"
+set $ws2 "2: browser"
+set $ws3 "3: spotify"
+set $ws4 "4: slack"
 set $ws5 "5"
 set $ws6 "6"
 set $ws7 "7"
 set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
+
+# ALlocate application to workspaces
+assign [class="org.wezfurlong.wezterm"] $ws1
+assign [class="brave-browser"] $ws2
+for_window [class="Spotify"] move to workspace $ws3
+for_window [class="Slack"] move to workspace $ws4
 
 # switch to workspace
 bindsym Mod1+1 workspace number $ws1
@@ -197,8 +203,22 @@ bindsym Mod1+r mode "resize"
 
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
+
 bar {
-        status_command i3status
+        status_command i3status -c ~/.config/i3/i3status.conf
+        font pango:JetBrains Mono Regular 14
+        # For transparency
+        i3bar_command i3bar --transparency
+        tray_output none
+  colors {
+    separator #65737E
+    background #1B2B34
+    statusline #D8DEE9
+    focused_workspace #6699CC #6699CC #1B2B34 #FFFFFF
+    active_workspace #5FB3B3 #5FB3B3 #1B2B34 #FFFFFF
+    inactive_workspace #343D46 #343D46 #D8DEE9 #888888
+    urgent_workspace #EC5f67 #EC5f67 #1B2B34 #FFFFFF
+  }
 }
 
 #######################################################################
@@ -213,11 +233,15 @@ bar {
 #######################################################################
 #exec i3-config-wizard
 
-# repeated key rate
-exec --no-startup-id xset r rate 300 20
-
-# set keyboard layout
+# Set keyboard layout
 exec --no-startup-id setxkbmap us
+
+# Display wallpaper
+exec_always feh --bg-fill ~/Pictures/minimalist-wallpaper.png
 
 # Detect laptop lid open/close
 #exec --no-startup-id /home/jeffreylean/.config/i3/lid_monitor.sh
+client.focused #6699CC #6699CC #1B2B34 #6699CC
+client.focused_inactive #5FB3B3 #5FB3B3 #D8DEE9 #A7ADBA
+client.unfocused #343D46 #343D46 #D8DEE9 #343D46
+client.urgent #EC5f67 #EC5f67 #1B2B34 #EC5f67
