@@ -250,6 +250,9 @@ exec_always feh --bg-fill ~/Pictures/minimalist-wallpaper.png
 # Screenshot
 bindsym Print exec maim -s -u | xclip -selection clipboard -t image/png -i
 
+#Screensaver
+exec_always --no-startup-id xset s 1800
+
 client.focused #6699CC #6699CC #1B2B34 #6699CC
 client.focused_inactive #5FB3B3 #5FB3B3 #D8DEE9 #A7ADBA
 client.unfocused #343D46 #343D46 #D8DEE9 #343D46
