@@ -257,3 +257,7 @@ client.focused #6699CC #6699CC #1B2B34 #6699CC
 client.focused_inactive #5FB3B3 #5FB3B3 #D8DEE9 #A7ADBA
 client.unfocused #343D46 #343D46 #D8DEE9 #343D46
 client.urgent #EC5f67 #EC5f67 #1B2B34 #EC5f67
+
+# brightness
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl --min-val=2 -q set 3%-
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl -q set +3%
