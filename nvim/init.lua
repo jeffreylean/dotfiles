@@ -16,3 +16,14 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 require('plugins')
+
+--vim.api.nvim_create_autocmd("FileType", {
+--    pattern = "openapi.yaml",
+--    callback = function()
+--        vim.lsp.start({
+--            name = "cendol",
+--            cmd = { "/Users/jeffreylean/Project/personal/cendol/target/debug/cendol" },
+--            root_dir = vim.fs.dirname(vim.fs.find({ 'Cargo.toml' }, { upward = true })[1])
+--        })
+--    end
+--})
