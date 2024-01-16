@@ -44,6 +44,13 @@ set_from_resource	$color15	color15
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 exec --no-startup-id dex --autostart --environment i3
 
+
+# Auto start i3
+#-d for running as a daemon (background).
+#-r for replacing the current instance (useful if you're re-loading i3).
+#-x for enabling the XIM interface (necessary for some applications).
+exec_always --no-startup-id ibus-daemon -drx
+
 # Set keyboard layout
 exec_always --no-startup-id setxkbmap us
 
@@ -166,9 +173,10 @@ set $ws8 "8"
 set $ws9 "9"
 set $ws10 "10"
 
-# ALlocate application to workspaces
+# Allocate application to workspaces
 assign [class="org.wezfurlong.wezterm"] $ws1
 assign [class="Brave-browser"] $ws2
+assign [class="firefox"] $ws2
 for_window [class="Slack"] move to workspace $ws3
 assign [class="obsidian"] $ws4
 for_window [class="Spotify"] move to workspace $ws5
