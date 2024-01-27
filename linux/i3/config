@@ -300,3 +300,6 @@ bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl -q set +3%
 exec_always --no-startup-id $HOME/.config/polybar/launch.sh
 
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
+
+# set touchpad to natural
+exec xinput set-prop "DELL0A69:00 0488:120A Touchpad" "libinput Natural Scrolling Enabled" 1
