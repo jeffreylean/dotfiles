@@ -31,7 +31,13 @@ require("lazy").setup({
         }
     },
     'onsails/lspkind.nvim',
-    'L3MON4D3/LuaSnip', -- Snippet engine
+    {
+        "L3MON4D3/LuaSnip",
+        -- follow latest release.
+        version = "v2.*", -- Replace <CurrentMajor> by the latest released major (first number of latest release)
+        -- install jsregexp (optional!).
+        build = "make install_jsregexp"
+    },
     {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
@@ -77,8 +83,7 @@ require("lazy").setup({
         config = function() vim.fn["mkdp#util#install"]() end,
     },
     -- Debug adapter protocol
-    'mfussenegger/nvim-dap',
-    'rcarriga/nvim-dap-ui',
+    { "rcarriga/nvim-dap-ui",      dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" } },
     -- LSP manager
     'williamboman/mason.nvim',
     'williamboman/mason-lspconfig.nvim',

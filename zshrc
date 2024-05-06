@@ -41,3 +41,8 @@ export PATH=$PATH:/opt/homebrew/Cellar/llvm/16.0.2/bin
 
 alias python=python3
 alias pip=pip3
+alias lzg=lazygit
+alias ls=eza
+
+# start zoxide
+eval "$(zoxide init zsh)"
