@@ -92,5 +92,11 @@ require("lazy").setup({
         "akinsho/toggleterm.nvim",
         version = '*',
         config = true,
+    },
+    -- harpoon
+    {
+        "ThePrimeagen/harpoon",
+        branch = "harpoon2",
+        dependencies = { "nvim-lua/plenary.nvim" }
     }
 })
