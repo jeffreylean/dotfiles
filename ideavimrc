@@ -37,7 +37,7 @@ nnoremap <leader>b :action Switcher<CR>
 nnoremap <c-6> :action Switcher<CR>
 
 nnoremap gd :action GotoDeclaration<CR>
-nnoremap gr :action FindUsages<CR>
+nnoremap gr :action ShowUsages<CR>
 nnoremap gi :action GotoImplementation<CR>
 
 nnoremap <leader>rl :action Refactorings.QuickListPopupAction<CR>
@@ -45,7 +45,7 @@ vmap <leader>rl :action Refactorings.QuickListPopupAction<CR>
 nnoremap <leader>ra :action ShowIntentionActions<CR>
 vmap <leader>ra :action ShowIntentionActions<CR>
 
-nnoremap <leader>rc :action CopyElement<CR>
+nnoremap <leader>ye :action CopyElement<CR>
 
 " nnoremap <leader>rf :action ReformatCode<CR>
 nnoremap <leader>rF :action com.intellij.csharpier.ReformatWithCSharpierAction<CR>
@@ -98,10 +98,10 @@ nnoremap <leader>sd :action QuickImplementations<CR>
 " nnoremap <leader>ps :action SearchEverywhere<CR>
 nnoremap <leader>sg :action SearchEverywhere<CR>
 nnoremap <leader>sf :action GotoFile<CR>
-nnoremap <leader>sg :action GotoClass<CR>
+nnoremap <leader>ss :action GotoSymbol<CR>
 nnoremap <leader>sp :action RecentProjectListGroup<CR>
 nnoremap <leader>sb :action ShowNavBar<CR>
-nnoremap <leader>ss :action FileStructurePopup<CR>
+nnoremap <leader>sg :action FileStructurePopup<CR>
 
 " nnoremap <leader>ra :action GotoAction<CR>
 nnoremap <leader>/ :action FindInPath<CR>
@@ -110,7 +110,8 @@ nnoremap <leader>/ :action FindInPath<CR>
 " vmap <leader>fr :action ReplaceInPath<CR>
 
 " Test and Run
-" nnoremap <leader>gt :action GotoTest<CR>
+nnoremap <leader>rc :action Run<CR>
+nnoremap <leader>gt :action GotoTest<CR>
 " nnoremap <leader>tn :action RunClass<CR>
 " nnoremap <leader>tl :action Rerun<CR>
 " nnoremap <leader>tf :action RerunFailedTests<CR>
