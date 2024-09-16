@@ -98,5 +98,8 @@ require("lazy").setup({
         "ThePrimeagen/harpoon",
         branch = "harpoon2",
         dependencies = { "nvim-lua/plenary.nvim" }
-    }
+    },
+    -- sourcegraph/cody
+    -- Packer.nvim, also make sure to install nvim-lua/plenary.nvim
+    { 'sourcegraph/sg.nvim', run = 'nvim -l build/init.lua', dependencies = { 'nvim-lua/plenary.nvim' } }
 })
