@@ -58,6 +58,9 @@ nnoremap <leader>cf :action NewFile<CR>
 nnoremap <leader>cd :action NewDirectory<CR>
 nnoremap <leader>rf :action RenameFile<CR>
 
+" Open terminal
+nnoremap <Leader>t :action ActivateTerminalToolWindow<CR>
+
 " Comment
 " nnoremap <leader>cc :action CommentByLineComment<CR>
 " vmap <leader>cc :action CommentByLineComment<CR>
