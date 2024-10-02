@@ -125,7 +125,7 @@ lsp.flow.setup {
 }
 
 -- typescript
-lsp.tsserver.setup {
+lsp.ts_ls.setup {
     on_attach = function(client, bufnr)
         on_attach(client, bufnr)
         enable_format_on_save(client, bufnr)
