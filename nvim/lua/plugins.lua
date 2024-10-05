@@ -102,7 +102,7 @@ require("lazy").setup({
     },
     -- sourcegraph/cody
     -- Packer.nvim, also make sure to install nvim-lua/plenary.nvim
-    { 'sourcegraph/sg.nvim', run = 'nvim -l build/init.lua', dependencies = { 'nvim-lua/plenary.nvim' } },
+    { 'sourcegraph/sg.nvim', run = 'nvim -l build/init.lua', dependencies = { 'nvim-lua/plenary.nvim' }, enabled = false },
     -- Avante
     {
         "yetone/avante.nvim",
@@ -149,5 +149,16 @@ require("lazy").setup({
                 ft = { "markdown", "Avante" },
             },
         },
+    },
+
+    -- todo-comments
+    {
+        "folke/todo-comments.nvim",
+        dependencies = { "nvim-lua/plenary.nvim" },
+        opts = {
+            -- your configuration comes here
+            -- or leave it empty to use the default settings
+            -- refer to the configuration section below
+        }
     }
 })

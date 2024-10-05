@@ -233,11 +233,11 @@ require("rust-tools").setup(opts)
 lsp.pyright.setup {}
 
 -- Sourcegraph configuration. All keys are optional
-require("sg").setup {
-    on_attach = function(client, bufnr)
-        on_attach(client, bufnr)
-    end,
-}
+--require("sg").setup {
+--    on_attach = function(client, bufnr)
+--        on_attach(client, bufnr)
+--    end,
+--}
 
 
 
