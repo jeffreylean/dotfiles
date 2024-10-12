@@ -43,6 +43,9 @@ require("lazy").setup({
         build = ':TSUpdate',
         cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
     },
+    {
+        'nvim-treesitter/nvim-treesitter-context',
+    },
     -- Adds extra functionality over rust analyzer
     'simrat39/rust-tools.nvim',
     {
