@@ -32,6 +32,8 @@
       "space s d s": "outline::Toggle",
       "space s s": "project_symbols::Toggle",
 
+      /// Universal search
+
       "space s d": "diagnostics::Deploy",
 
       /// Git
@@ -45,7 +47,7 @@
       // Close other items
       "space b o": "pane::CloseInactiveItems",
       "space e": "project_panel::ToggleFocus",
-
+      "space c t": "assistant::ToggleFocus",
       // Search file
       "space s f": "file_finder::Toggle"
     }
@@ -77,8 +79,8 @@
   {
     "context": "Workspace",
     "bindings": {
-      "space o t": "terminal_panel::ToggleFocus",
-      "space w o": "workspace::CloseAllDocks"
+      "ctrl-\\": "terminal_panel::ToggleFocus",
+      "ctrl-c": "workspace::CloseAllDocks"
     }
   },
   {
@@ -87,7 +89,9 @@
       "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
       "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
       "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
-      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"]
+      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"],
+      "ctrl-shift-k": "terminal::ScrollLineUp",
+      "ctrl-shift-j": "terminal::ScrollLineDown"
     }
   },
   // File panel (netrw)
@@ -118,12 +122,6 @@
       "ctrl-w l": ["workspace::ActivatePaneInDirection", "Right"],
       "ctrl-w k": ["workspace::ActivatePaneInDirection", "Up"],
       "ctrl-w j": ["workspace::ActivatePaneInDirection", "Down"]
-    }
-  },
-  {
-    "context": "Workspace",
-    "bindings": {
-      "space a a": "workspace::ToggleRightDock"
     }
   }
 ]

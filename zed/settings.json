@@ -14,13 +14,13 @@
     },
     "version": "2"
   },
-  "theme": "Tokyo Night",
+  "theme": "Rosé Pine Moon",
   "buffer_font_size": 15,
   "vim_mode": true,
   "git": {
     "git_gutter": "tracked_files",
     "inline_blame": {
-      "enabled": true
+      "enabled": false
     }
   },
   "base_keymap": "JetBrains",
