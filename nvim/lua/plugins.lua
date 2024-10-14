@@ -10,6 +10,10 @@ require("lazy").setup({
             vim.cmd([[colorscheme tokyonight]])
         end,
     },
+    {
+        "rose-pine/neovim",
+        name = "rose-pine"
+    },
     -- Status line
     { 'nvim-lualine/lualine.nvim', dependencies = { 'kyazdani42/nvim-web-devicons', opt = true } },
     {
@@ -105,7 +109,13 @@ require("lazy").setup({
     },
     -- sourcegraph/cody
     -- Packer.nvim, also make sure to install nvim-lua/plenary.nvim
-    { 'sourcegraph/sg.nvim', run = 'nvim -l build/init.lua', dependencies = { 'nvim-lua/plenary.nvim' }, enabled = false },
+    {
+        'sourcegraph/sg.nvim',
+        run = 'nvim -l build/init.lua',
+        dependencies = {
+            'nvim-lua/plenary.nvim' },
+        enabled = false
+    },
     -- Avante
     {
         "yetone/avante.nvim",

@@ -13,8 +13,7 @@ end
 -- This is where you actually apply your config choices
 
 -- For example, changing the color scheme:
-config.color_scheme = 'tokyonight_storm'
---config.window_background_opacity = 0.95
+config.color_scheme = 'rose-pine-moon'
 
 -- Font size
 config.font_size = 15.5
@@ -37,10 +36,10 @@ config.keys = {
 config.adjust_window_size_when_changing_font_size = false
 
 config.window_padding = {
-  left = 1,
-  right = 1,
-  top = 0,
-  bottom = 0,
+    left = 1,
+    right = 1,
+    top = 0,
+    bottom = 0,
 }
 
 

@@ -31,6 +31,7 @@
       /// Symbol search
       "space s d s": "outline::Toggle",
       "space s s": "project_symbols::Toggle",
+      "space s g": "pane::DeploySearch",
 
       /// Universal search
 
