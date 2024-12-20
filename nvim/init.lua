@@ -17,6 +17,9 @@ end
 vim.opt.rtp:prepend(lazypath)
 require('plugins')
 
+vim.o.background = "dark" -- or "light" for light mode
+vim.cmd([[colorscheme gruvbox]])
+
 --vim.api.nvim_create_autocmd("FileType", {
 --    pattern = "openapi.yaml",
 --    callback = function()

@@ -221,7 +221,7 @@ local opts = {
                 },
                 -- disable proc macro diagnostics, the error message is too irritating.
                 diagnostics = {
-                    disabled = { "unresolved-proc-macro" },
+                    disabled = { "unresolved-proc-macro", "unlinked-file" },
                 },
             },
         },

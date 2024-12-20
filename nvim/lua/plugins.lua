@@ -1,5 +1,6 @@
 require("lazy").setup({
     'folke/which-key.nvim',
+    -- themes
     {
         'folke/tokyonight.nvim',
         dependencies = { 'tjdevries/colorbuddy.nvim' },
@@ -13,6 +14,12 @@ require("lazy").setup({
     {
         "rose-pine/neovim",
         name = "rose-pine"
+    },
+    {
+        "ellisonleao/gruvbox.nvim",
+        priority = 1000,
+        config = true,
+        opts = ...
     },
     -- Status line
     { 'nvim-lualine/lualine.nvim', dependencies = { 'kyazdani42/nvim-web-devicons', opt = true } },
