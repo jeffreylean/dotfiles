@@ -13,7 +13,7 @@ end
 -- This is where you actually apply your config choices
 
 -- For example, changing the color scheme:
-config.color_scheme = 'rose-pine-moon'
+config.color_scheme = 'Gruvbox dark, hard (base16)'
 
 -- Font size
 config.font_size = 15.5

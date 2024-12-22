@@ -7,14 +7,16 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
+  "show_inline_completions": false,
+  "relative_line_numbers": true,
   "assistant": {
     "default_model": {
       "provider": "anthropic",
-      "model": "claude-3-5-sonnet-20240620"
+      "model": "claude-3-5-sonnet-latest"
     },
     "version": "2"
   },
-  "theme": "Rosé Pine Moon",
+  "theme": "Gruvbox Dark Hard",
   "buffer_font_size": 15,
   "vim_mode": true,
   "git": {
