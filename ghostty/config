@@ -13,6 +13,7 @@ keybind = ctrl+space>shift+h=resize_split:left,100
 keybind = ctrl+space>shift+l=resize_split:right,100
 keybind = ctrl+space>shift+k=resize_split:up,100
 keybind = ctrl+space>shift+j=resize_split:down,100
+keybind = ctrl+space>z=toggle_split_zoom
 keybind = super+k=scroll_page_up
 keybind = super+shift+k=scroll_to_top
 keybind = super+j=scroll_page_down
