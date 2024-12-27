@@ -1,4 +1,5 @@
 theme = gruvbox-material
+font-family = BerkeleyMono Nerd Font
 
 # split
 keybind = ctrl+space>c=new_tab
@@ -16,3 +17,6 @@ keybind = super+k=scroll_page_up
 keybind = super+shift+k=scroll_to_top
 keybind = super+j=scroll_page_down
 keybind = super+shift+j=scroll_to_bottom
+
+# quick terminal access
+keybind = super+escape=toggle_quick_terminal
