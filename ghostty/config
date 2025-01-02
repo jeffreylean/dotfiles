@@ -21,3 +21,8 @@ keybind = super+shift+j=scroll_to_bottom
 
 # quick terminal access
 keybind = super+escape=toggle_quick_terminal
+
+macos-icon = custom-style
+macos-icon-ghost-color = #a89984
+macos-icon-screen-color = #32302f
+macos-icon-frame = beige
