@@ -2,18 +2,18 @@ theme = gruvbox-material
 font-family = BerkeleyMono Nerd Font
 
 # split
-keybind = ctrl+space>c=new_tab
-keybind = ctrl+space>v=new_split:right
-keybind = ctrl+space>s=new_split:down
-keybind = ctrl+space>h=goto_split:left
-keybind = ctrl+space>l=goto_split:right
-keybind = ctrl+space>k=goto_split:top
-keybind = ctrl+space>j=goto_split:bottom
-keybind = ctrl+space>shift+h=resize_split:left,100
-keybind = ctrl+space>shift+l=resize_split:right,100
-keybind = ctrl+space>shift+k=resize_split:up,100
-keybind = ctrl+space>shift+j=resize_split:down,100
-keybind = ctrl+space>z=toggle_split_zoom
+#keybind = ctrl+space>c=new_tab
+#keybind = ctrl+space>v=new_split:right
+#keybind = ctrl+space>s=new_split:down
+#keybind = ctrl+space>h=goto_split:left
+#keybind = ctrl+space>l=goto_split:right
+#keybind = ctrl+space>k=goto_split:top
+#keybind = ctrl+space>j=goto_split:bottom
+#keybind = ctrl+space>shift+h=resize_split:left,100
+#keybind = ctrl+space>shift+l=resize_split:right,100
+#keybind = ctrl+space>shift+k=resize_split:up,100
+#keybind = ctrl+space>shift+j=resize_split:down,100
+#keybind = ctrl+space>z=toggle_split_zoom
 keybind = super+k=scroll_page_up
 keybind = super+shift+k=scroll_to_top
 keybind = super+j=scroll_page_down
