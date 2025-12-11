@@ -10,10 +10,10 @@
   {
     "context": "Editor && vim_mode == normal && !VimWaiting && !menu",
     "bindings": {
-      "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
-      "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
-      "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
-      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"],
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown",
 
       /// LSP stuff
       "space c a": "editor::ToggleCodeActions",
@@ -26,29 +26,29 @@
       "g t": "editor::GoToTypeDefinition",
       "g T": "editor::GoToTypeDefinitionSplit",
       "] e": "editor::GoToDiagnostic",
-      "[ e": "editor::GoToPrevDiagnostic",
+      "[ e": "editor::GoToPreviousDiagnostic",
 
       /// Symbol search
-      "space s d s": "outline::Toggle",
-      "space s s": "project_symbols::Toggle",
-      "space s g": "pane::DeploySearch",
+      //"space s d s": "outline::Toggle",
+      "space s s": "outline::Toggle",
 
-      /// Universal search
+      /// global search
+      "space s g": "project_search::SearchInNew",
 
       "space s d": "diagnostics::Deploy",
 
       /// Git
       "] h": "editor::GoToHunk",
-      "[ h": "editor::GoToPrevHunk",
+      "[ h": "editor::GoToPreviousHunk",
 
       /// Buffers
       // Buffers switching
-      "shift-h": "pane::ActivatePrevItem",
+      "shift-h": "pane::ActivatePreviousItem",
       "shift-l": "pane::ActivateNextItem",
       // Close other items
-      "space b o": "pane::CloseInactiveItems",
+      "space b o": "pane::CloseOtherItems",
       "space e": "project_panel::ToggleFocus",
-      "space c t": "assistant::ToggleFocus",
+      "space c t": "terminal_panel::ToggleFocus",
       // Search file
       "space s f": "file_finder::Toggle"
     }
@@ -76,21 +76,19 @@
       "a": "editor::ToggleCodeActions" // zed specific
     }
   },
-  // Toggle terminal
   {
     "context": "Workspace",
     "bindings": {
-      "ctrl-\\": "terminal_panel::ToggleFocus",
       "ctrl-c": "workspace::CloseAllDocks"
     }
   },
   {
     "context": "Terminal",
     "bindings": {
-      "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
-      "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
-      "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
-      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"],
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown",
       "ctrl-shift-k": "terminal::ScrollLineUp",
       "ctrl-shift-j": "terminal::ScrollLineDown"
     }
@@ -109,20 +107,20 @@
       // Close project panel as project file panel on the left
       "space e": "workspace::ToggleLeftDock",
       // Navigate between panel
-      "ctrl-h": ["workspace::ActivatePaneInDirection", "Left"],
-      "ctrl-l": ["workspace::ActivatePaneInDirection", "Right"],
-      "ctrl-k": ["workspace::ActivatePaneInDirection", "Up"],
-      "ctrl-j": ["workspace::ActivatePaneInDirection", "Down"]
+      "ctrl-h": "workspace::ActivatePaneLeft",
+      "ctrl-l": "workspace::ActivatePaneRight",
+      "ctrl-k": "workspace::ActivatePaneUp",
+      "ctrl-j": "workspace::ActivatePaneDown"
     }
   },
   // Panel nagivation
   {
     "context": "Dock",
     "bindings": {
-      "ctrl-w h": ["workspace::ActivatePaneInDirection", "Left"],
-      "ctrl-w l": ["workspace::ActivatePaneInDirection", "Right"],
-      "ctrl-w k": ["workspace::ActivatePaneInDirection", "Up"],
-      "ctrl-w j": ["workspace::ActivatePaneInDirection", "Down"]
+      "ctrl-w h": "workspace::ActivatePaneLeft",
+      "ctrl-w l": "workspace::ActivatePaneRight",
+      "ctrl-w k": "workspace::ActivatePaneUp",
+      "ctrl-w j": "workspace::ActivatePaneDown"
     }
   }
 ]

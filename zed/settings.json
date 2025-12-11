@@ -7,17 +7,17 @@
 // custom settings, run the `open default settings` command
 // from the command palette or from `Zed` application menu.
 {
-  "show_inline_completions": false,
-  "relative_line_numbers": true,
   "assistant": {
     "default_model": {
-      "provider": "anthropic",
-      "model": "claude-3-5-sonnet-latest"
+      "provider": "openai",
+      "model": "gpt-4o"
     },
     "version": "2"
   },
-  "theme": "Gruvbox Dark Hard",
+  "relative_line_numbers": true,
+  "theme": "Tokyo Night",
   "buffer_font_size": 15,
+  "soft_wrap": "editor_width",
   "vim_mode": true,
   "git": {
     "git_gutter": "tracked_files",
@@ -40,7 +40,8 @@
   "terminal": {
     "env": {
       "EDITOR": "zed --wait"
-    }
+    },
+    "dock": "right"
   },
   "file_types": {
     "Dockerfile": ["Dockerfile", "Dockerfile.*"],
@@ -85,9 +86,7 @@
   "lsp": {
     "rust-analyzer": {
       "initialization_options": {
-        "checkOnSave": {
-          "command": "clippy"
-        },
+        "checkOnSave": true,
         "rust": {
           "analyzerTargetDir": true
         },
@@ -113,6 +112,161 @@
           "functionTypeParameters": true,
           "parameterNames": true,
           "rangeVariableTypes": true
+        },
+        "directoryFilters": ["-**/node_modules", "-**/.git", "-**/vendor"],
+        "gofumpt": true,
+        "symbolScope": "workspace",
+        "staticcheck": true,
+        "templateExtensions": ["tmpl"],
+        "analyses": {
+          "nilness": true,
+          "unusedparams": true,
+          "unusedvariable": true,
+          "unusedwrite": true,
+          "useany": true
+        },
+        "codelenses": {
+          "gc_details": true
+        }
+      }
+    }
+  }
+}
+// Zed settings
+//
+// For information on how to configure Zed, see the Zed
+// documentation: https://zed.dev/docs/configuring-zed
+//
+// To see all of Zed's default settings without changing your
+// custom settings, run the `open default settings` command
+// from the command palette or from `Zed` application menu.
+{
+  "assistant": {
+    "default_model": {
+      "provider": "openai",
+      "model": "gpt-4o"
+    },
+    "version": "2"
+  },
+  "relative_line_numbers": true,
+  "language_models": {
+    "openai": {
+      "version": "1",
+      "api_url": "https://public-api.grabgpt.managed.catwalk-k8s.stg-myteksi.com/v1"
+    }
+  },
+  "theme": "Catppuccin Mocha",
+  "buffer_font_size": 15,
+  "soft_wrap": "editor_width",
+  "vim_mode": true,
+  "git": {
+    "git_gutter": "tracked_files",
+    "inline_blame": {
+      "enabled": false
+    }
+  },
+  "base_keymap": "JetBrains",
+  "buffer_font_family": "JetBrainsMono Nerd Font Mono",
+  "scrollbar": {
+    "show": "never"
+  },
+  "indent_guides": {
+    "enabled": true,
+    "coloring": "indent_aware"
+  },
+  "inlay_hints": {
+    "enabled": true
+  },
+  "terminal": {
+    "env": {
+      "EDITOR": "zed --wait"
+    },
+    "dock": "right"
+  },
+  "file_types": {
+    "Dockerfile": ["Dockerfile", "Dockerfile.*"],
+    "JSON": ["json", "jsonc", "*.code-snippets"]
+  },
+  // File scan exclusions, hide on the file explorer and search
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/.svn",
+    "**/.hg",
+    "**/CVS",
+    "**/.DS_Store",
+    "**/Thumbs.db",
+    "**/.classpath",
+    "**/.settings",
+    // above is default from Zed
+    "**/out",
+    "**/dist",
+    "**/.husky",
+    "**/.turbo",
+    "**/.vscode-test",
+    "**/.vscode",
+    "**/.next",
+    "**/.storybook",
+    "**/node_modules"
+  ],
+  "telemetry": {
+    "diagnostics": false,
+    "metrics": false
+  },
+  // Move all panel to the right
+  "project_panel": {
+    "button": true,
+    "dock": "left",
+    "git_status": true
+  },
+  "outline_panel": {
+    "button": true,
+    "dock": "right",
+    "git_status": true
+  },
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "checkOnSave": true,
+        "rust": {
+          "analyzerTargetDir": true
+        },
+        "inlayHints": {
+          "maxLength": null,
+          "lifetimeElisionHints": {
+            "enable": "skip_trivial",
+            "useParameterNames": true
+          },
+          "closureReturnTypeHints": {
+            "enable": "always"
+          }
+        }
+      }
+    },
+    "gopls": {
+      "initialization_options": {
+        "hints": {
+          "assignVariableTypes": true,
+          "compositeLiteralFields": true,
+          "compositeLiteralTypes": true,
+          "constantValues": true,
+          "functionTypeParameters": true,
+          "parameterNames": true,
+          "rangeVariableTypes": true
+        },
+        "directoryFilters": ["-**/node_modules", "-**/.git", "-**/vendor"],
+        "gofumpt": true,
+        "symbolScope": "workspace",
+        "staticcheck": true,
+        "templateExtensions": ["tmpl"],
+        "analyses": {
+          "nilness": true,
+          "unusedparams": true,
+          "unusedvariable": true,
+          "unusedwrite": true,
+          "useany": true
+        },
+        "codelenses": {
+          "gc_details": true
         }
       }
     }
