@@ -1,120 +1,120 @@
 {
-    "go.useLanguageServer": true, 
-    "go.toolsManagement.autoUpdate": true,
-    "editor.formatOnSave": false,
-    "editor.wordWrap": "on",
-    "editor.wrappingIndent": "same",
-    "[go]": {
-        "editor.formatOnSave": true,
-        "editor.codeActionsOnSave": {
-            "source.organizeImports": "explicit"
-        },
-        "editor.defaultFormatter": "golang.go"
-    },
-    "go.formatTool": "gofumpt",
-    "go.lintTool": "golangci-lint",
-    "go.lintFlags": [
-        "--fast"
-    ],
-    "gopls": {
-        "build.env": {
-            "GO111MODULE": "on",
-        },
-        "ui.semanticTokens": true,
-        "formatting.gofumpt": true,
-        "usePlaceholders": true,
-        "staticcheck": true,
-        "completionDocumentation": true,
-        "matcher": "fuzzy",
-        "completionBudget": "5000ms",
-        "symbolMatcher": "fuzzy",
-        "symbolStyle": "dynamic",
-        "analyses": {
-            "unusedparams": true,
-            "shadow": true
-        },
-        "expandWorkspaceToModule": false,
-        "verboseOutput": true
-    },
+  "go.useLanguageServer": true,
+  "go.toolsManagement.autoUpdate": true,
+  "editor.formatOnSave": false,
+  "editor.wordWrap": "on",
+  "editor.wrappingIndent": "same",
+  "[go]": {
+    "editor.formatOnSave": true,
     "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
+      "source.organizeImports": "explicit"
     },
-    "terminal.integrated.env.osx": {
-        "FIG_NEW_SESSION": "1"
+    "editor.defaultFormatter": "golang.go"
+  },
+  "go.formatTool": "gofumpt",
+  "go.lintTool": "golangci-lint",
+  "go.lintFlags": ["--fast"],
+  "gopls": {
+    "build.env": {
+      "GO111MODULE": "on"
     },
-    "editor.accessibilitySupport": "off",
-    "cursor.cmdk.useThemedDiffBackground": true,
-    "git.openRepositoryInParentFolders": "always",
-    "editor.fontSize": 13,
-    "workbench.tree.enableStickyScroll": false,
-    "workbench.tree.indent": 9,
-    "editor.lineHeight": 1.2,
-    "editor.fontFamily": "JetBrains Mono",
-    "workbench.preferredDarkColorTheme": "Solarized Dark",
-    "workbench.preferredHighContrastColorTheme": "Solarized Dark",
-    "workbench.preferredHighContrastLightColorTheme": "Solarized Dark",
-    "workbench.preferredLightColorTheme": "Solarized Dark",
-    "workbench.colorTheme": "Rosé Pine Dawn",
-    "vim.useSystemClipboard": true,
-    "extensions.experimental.affinity": {
-        "asvetliakov.vscode-neovim": 1
+    "ui.semanticTokens": true,
+    "formatting.gofumpt": true,
+    "usePlaceholders": true,
+    "staticcheck": true,
+    "completionDocumentation": true,
+    "matcher": "fuzzy",
+    "completionBudget": "5000ms",
+    "symbolMatcher": "fuzzy",
+    "symbolStyle": "dynamic",
+    "analyses": {
+      "unusedparams": true,
+      "shadow": true
     },
-    "vim.leader": "<space>",
-    "vim.normalModeKeyBindings": [
-        {
-            "before": ["<leader>", "s", "f"],
-            "commands": ["workbench.action.quickOpen"]
-        },
-        {
-            "before": ["<leader>", "d", "s"],
-            "commands": ["workbench.action.gotoSymbol"]
-        },
-        {
-            "before": ["<leader>", "s", "g"],
-            "commands": ["workbench.action.findInFiles"]
-        },
-        {
-            "before": ["<leader>", "w", "s"],
-            "commands": ["workbench.action.showAllSymbols"]
-        },
-        {
-            "before": ["<leader>", "a", "a"],
-            "commands": ["workbench.action.toggleAuxiliaryBar"]
-        },
-        {
-            "before": ["g", "r"],
-            "commands": ["editor.action.goToReferences"]
-        },
-        {
-            "before": ["g", "i"],
-            "commands": ["editor.action.goToImplementation"]
-        },
-        {
-            "before": ["K"],
-            "commands": ["editor.action.showHover"]
-        },
-        {
-            "before": ["<leader>", "s", "e"],
-            "commands": ["workbench.action.showErrorsWarnings"]
-        },
-        {
-            "before": ["<leader>", "g", "t"],
-            "commands": ["go.toggle.test.file"]
-        },
-        {
-            "before": ["<leader>","e"],
-            "commands": ["workbench.action.toggleSidebarVisibility"]
-        },
-    ],
-    "cursor-retrieval.canAttemptGithubLogin": false,
-    "[rust]": {
-        "editor.formatOnSave": true,
-        "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    "expandWorkspaceToModule": false,
+    "verboseOutput": true
+  },
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+  "terminal.integrated.env.osx": {
+    "FIG_NEW_SESSION": "1"
+  },
+  "editor.accessibilitySupport": "off",
+  "cursor.cmdk.useThemedDiffBackground": true,
+  "git.openRepositoryInParentFolders": "always",
+  "editor.fontSize": 13,
+  "workbench.tree.enableStickyScroll": false,
+  "workbench.tree.indent": 9,
+  "editor.lineHeight": 1.2,
+  "editor.fontFamily": "JetBrains Mono",
+  "workbench.preferredDarkColorTheme": "Tokyo Night",
+  "workbench.preferredHighContrastColorTheme": "Tokyo Night",
+  "workbench.preferredHighContrastLightColorTheme": "Tokyo Night",
+  "workbench.preferredLightColorTheme": "Tokyo Night",
+  "workbench.colorTheme": "Tokyo Night",
+  "vim.useSystemClipboard": true,
+  "extensions.experimental.affinity": {
+    "asvetliakov.vscode-neovim": 1
+  },
+  "vim.leader": "<space>",
+  "vim.normalModeKeyBindings": [
+    {
+      "before": ["<leader>", "s", "f"],
+      "commands": ["workbench.action.quickOpen"]
     },
-    "rust-analyzer.imports.granularity.group": "module",
-    "rust-analyzer.imports.prefix": "self",
-    "rust-analyzer.cargo.allTargets": true,
-    "rust-analyzer.cargo.features": "all",
-    "rust-analyzer.procMacro.enable": true,
-    "rust-analyzer.lens.enable": true
+    {
+      "before": ["<leader>", "d", "s"],
+      "commands": ["workbench.action.gotoSymbol"]
+    },
+    {
+      "before": ["<leader>", "s", "g"],
+      "commands": ["workbench.action.findInFiles"]
+    },
+    {
+      "before": ["<leader>", "w", "s"],
+      "commands": ["workbench.action.showAllSymbols"]
+    },
+    {
+      "before": ["<leader>", "a", "a"],
+      "commands": ["workbench.action.toggleAuxiliaryBar"]
+    },
+    {
+      "before": ["g", "r"],
+      "commands": ["editor.action.goToReferences"]
+    },
+    {
+      "before": ["g", "i"],
+      "commands": ["editor.action.goToImplementation"]
+    },
+    {
+      "before": ["K"],
+      "commands": ["editor.action.showHover"]
+    },
+    {
+      "before": ["<leader>", "s", "e"],
+      "commands": ["workbench.action.showErrorsWarnings"]
+    },
+    {
+      "before": ["<leader>", "g", "t"],
+      "commands": ["go.toggle.test.file"]
+    },
+    {
+      "before": ["<leader>", "e"],
+      "commands": ["workbench.action.toggleSidebarVisibility"]
+    }
+  ],
+  "cursor-retrieval.canAttemptGithubLogin": false,
+  "[rust]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "rust-analyzer.imports.granularity.group": "module",
+  "rust-analyzer.imports.prefix": "self",
+  "rust-analyzer.cargo.allTargets": true,
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.procMacro.enable": true,
+  "cursor.composer.shouldAutoScrollToBottom": false,
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "rust-analyzer.lens.enable": true
 }
