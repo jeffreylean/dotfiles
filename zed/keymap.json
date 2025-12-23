@@ -50,7 +50,10 @@
       "space e": "project_panel::ToggleFocus",
       "space c t": "terminal_panel::ToggleFocus",
       // Search file
-      "space s f": "file_finder::Toggle"
+      "space s f": [
+        "task::Spawn",
+        { "task_name": "Television File Finder", "reveal_target": "center" }
+      ]
     }
   },
   // Empty pane
