@@ -66,10 +66,6 @@ require("lazy").setup({
         -- use opts = {} for passing setup options
         -- this is equivalent to setup({}) function
     },
-    {
-        'jose-elias-alvarez/null-ls.nvim',
-        dependencies = { 'nvim-lua/plenary.nvim' }
-    },
     'MunifTanjim/prettier.nvim',
     {
         'nvim-tree/nvim-tree.lua',
@@ -183,5 +179,9 @@ require("lazy").setup({
     -- cursor animation
     {
         "sphamba/smear-cursor.nvim",
-    }
+    },
+    {
+        'stevearc/conform.nvim',
+        opts = {},
+    },
 })
