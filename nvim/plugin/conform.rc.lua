@@ -14,8 +14,10 @@ require("conform").setup({
                 return { "isort", "black" }
             end
         end,
-        javascript = { "oxfmt" },
-        typescript = { "oxfmt" },
+        javascript = { "prettierd" },
+        javascriptreact = { "prettierd" },
+        typescript = { "prettierd" },
+        typescriptreact = { "prettierd" },
         -- Use the "*" filetype to run formatters on all filetypes.
         ["*"] = { "codespell" },
         -- Use the "_" filetype to run formatters on filetypes that don't

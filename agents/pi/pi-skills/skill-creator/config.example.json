@@ -1,0 +1,9 @@
+{
+  "skillName": "skill-creator",
+  "version": "1",
+  "defaults": {
+    "validatorStrictMode": false,
+    "minimumGotchaBullets": 3
+  },
+  "dataPath": "~/.local/share/pi-skills/skill-creator"
+}

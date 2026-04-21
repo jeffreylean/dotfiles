@@ -1,0 +1,11 @@
+{
+  "name": "codebase-explorer-skill",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "resolve": "node scripts/resolve-repo-target.js",
+    "plan": "node scripts/loc-shard-plan.js",
+    "report-path": "node scripts/report-path.js"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "skill-creator",
+  "version": "1.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Scaffold, validate, and iteratively improve Pi skills with Node/Bun runnable helper scripts",
+  "scripts": {
+    "create": "node skill-create.js",
+    "validate": "node skill-validate.js",
+    "improve": "node skill-improve.js"
+  }
+}
