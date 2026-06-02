@@ -1,5 +1,11 @@
-theme = tokyonight
+theme = TokyoNight
 font-family = BerkeleyMono Nerd Font
+
+# Window
+window-padding-x = 14
+window-padding-y = 14
+confirm-close-surface=false
+resize-overlay = never
 
 # split
 # keybind = ctrl+space>c=new_tab
@@ -18,6 +24,7 @@ keybind = super+k=scroll_page_up
 keybind = super+shift+k=scroll_to_top
 keybind = super+j=scroll_page_down
 keybind = super+shift+j=scroll_to_bottom
+keybind = shift+enter=text:\x1b\r
 
 # quick terminal access
 keybind = super+escape=toggle_quick_terminal
@@ -29,3 +36,9 @@ macos-icon-frame = beige
 
 # pre-release
 auto-update-channel = tip
+
+# Slowdown mouse scrolling
+mouse-scroll-multiplier = 0.95
+
+# Fix general slowness on hyprland (https://github.com/ghostty-org/ghostty/discussions/3224)
+async-backend = epoll
