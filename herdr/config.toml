@@ -1,0 +1,10 @@
+onboarding = false
+
+[theme]
+name = "tokyo-night"
+
+[keys]
+prefix = "ctrl+space"
+split_horizontal = "prefix+c"
+new_tab = "prefix+t"
+

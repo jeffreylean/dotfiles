@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "pi-prd-deliverables/v1",
+  "specName": "example-feature",
+  "phase": "READY",
+  "prd": {
+    "title": "Example Feature",
+    "generatedBy": "to-prd",
+    "issue": "",
+    "sourcePath": "prd.md"
+  },
+  "deliverables": [
+    {
+      "id": "D1",
+      "name": "Foundation and contracts",
+      "effort": "M",
+      "status": "PENDING",
+      "dependsOn": [],
+      "tasks": [
+        {
+          "id": "D1-1",
+          "category": "setup",
+          "description": "Define the core interface and integration boundary described by the PRD.",
+          "steps": [
+            "Interface is documented at the public boundary",
+            "Existing callers continue to compile",
+            "Relevant unit tests or type checks pass"
+          ],
+          "passes": false
+        }
+      ]
+    },
+    {
+      "id": "D2",
+      "name": "User-facing behavior",
+      "effort": "L",
+      "status": "PENDING",
+      "dependsOn": ["D1"],
+      "tasks": [
+        {
+          "id": "D2-1",
+          "category": "implementation",
+          "description": "Implement the primary user story from the PRD.",
+          "steps": [
+            "Primary happy path works end to end",
+            "Failure path shows the expected behavior",
+            "Regression coverage exists for the user-visible behavior"
+          ],
+          "passes": false
+        }
+      ]
+    }
+  ],
+  "context": {
+    "patterns": [],
+    "keyFiles": [],
+    "nonGoals": []
+  },
+  "subagents": {
+    "planning": ["scout", "planner"],
+    "execution": "worker",
+    "review": "reviewer"
+  }
+}

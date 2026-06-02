@@ -78,7 +78,16 @@ require("lazy").setup({
     'tpope/vim-fugitive',
     'tpope/vim-rhubarb',
     'lewis6991/gitsigns.nvim',
-    -- Fuzzy Finder (files,lsp,etc)
+    -- Fast file finder
+    {
+        "dmtrKovalenko/fff.nvim",
+        build = function()
+            require("fff.download").download_or_build_binary()
+        end,
+        lazy = false,
+        opts = {},
+    },
+    -- Telescope pickers (buffers,lsp,etc)
     {
         'nvim-telescope/telescope.nvim',
         tag = '0.1.4',

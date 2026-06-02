@@ -1,0 +1,9 @@
+{
+  "name": "prd-deliverables-skill",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "prd-deliverables": "./scripts/prd-deliverables.js"
+  }
+}

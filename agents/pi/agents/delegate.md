@@ -1,7 +1,7 @@
 ---
 name: delegate
 description: Lightweight subagent that inherits the parent model with no default reads
-model: openai-codex/gpt-5.3-codex
+model: openai-codex/gpt-5.4
 thinking: high
 ---
 

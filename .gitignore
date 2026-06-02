@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Dependencies
+node_modules/
+
+# Pi local state/cache
+agents/pi/pi-skills/.pi/
+
+# Logs
+*.log

@@ -263,45 +263,29 @@ vim.lsp.config["gopls"] = {
 vim.lsp.enable("gopls")
 
 -- rust
--- Configure LSP through rust-tools.nvim plugin.
--- rust-tools will configure and enable certain LSP features for us.
--- See https://github.com/simrat39/rust-tools.nvim#configuration
-vim.lsp.config["rust-tools"] = {
-    tools = {
-        runnables = {
-            use_telescope = true,
-        },
-        inlay_hints = {
-            auto = true,
-            show_parameter_hints = false,
-            parameter_hints_prefix = "",
-            other_hints_prefix = "",
-        },
-    },
-    -- all the opts to send to nvim-lspconfig
-    -- these override the defaults set by rust-tools.nvim
-    -- see https://github.com/neovim/nvim-lspconfig/blob/master/CONFIG.md#rust_analyzer
-    server = {
-        on_attach = function(client, bufnr)
-            on_attach(client, bufnr)
-        end,
-        settings = {
-            -- to enable rust-analyzer settings visit:
-            -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
-            ["rust-analyzer"] = {
-                -- enable clippy on save
-                checkOnSave = {
-                    command = "clippy",
-                },
-                -- disable proc macro diagnostics, the error message is too irritating.
-                diagnostics = {
-                    disabled = { "unresolved-proc-macro" },
-                },
+-- Configure the actual Rust LSP client name. mason-lspconfig starts `rust_analyzer`,
+-- so attaching config to `rust-tools` does not run this shared on_attach.
+vim.lsp.config["rust_analyzer"] = {
+    on_attach = function(client, bufnr)
+        on_attach(client, bufnr)
+    end,
+    settings = {
+        -- to enable rust-analyzer settings visit:
+        -- https://github.com/rust-analyzer/rust-analyzer/blob/master/docs/user/generated_config.adoc
+        ["rust-analyzer"] = {
+            -- enable clippy on save
+            checkOnSave = true,
+            check = {
+                command = "clippy",
+            },
+            -- disable proc macro diagnostics, the error message is too irritating.
+            diagnostics = {
+                disabled = { "unresolved-proc-macro" },
             },
         },
     },
 }
-vim.lsp.enable("rust-tools")
+vim.lsp.enable("rust_analyzer")
 
 -- This autocmd runs the organize imports code action for Python files
 vim.api.nvim_create_autocmd("BufWritePre", {

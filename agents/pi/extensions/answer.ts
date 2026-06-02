@@ -10,9 +10,17 @@
  * 4. Submits the compiled answers when done
  */
 
-import { complete, type Model, type Api, type UserMessage } from "@mariozechner/pi-ai";
-import type { ExtensionAPI, ExtensionContext } from "@mariozechner/pi-coding-agent";
-import { BorderedLoader } from "@mariozechner/pi-coding-agent";
+import {
+  complete,
+  type Model,
+  type Api,
+  type UserMessage,
+} from "@earendil-works/pi-ai";
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+} from "@earendil-works/pi-coding-agent";
+import { BorderedLoader } from "@earendil-works/pi-coding-agent";
 import {
   type Component,
   Editor,
@@ -23,7 +31,7 @@ import {
   type TUI,
   visibleWidth,
   wrapTextWithAnsi,
-} from "@mariozechner/pi-tui";
+} from "@earendil-works/pi-tui";
 
 // Structured output format for question extraction
 interface ExtractedQuestion {
@@ -149,7 +157,11 @@ class QnAComponent implements Component {
   private yellow = (s: string) => `\x1b[33m${s}\x1b[0m`;
   private gray = (s: string) => `\x1b[90m${s}\x1b[0m`;
 
-  constructor(questions: ExtractedQuestion[], tui: TUI, onDone: (result: string | null) => void) {
+  constructor(
+    questions: ExtractedQuestion[],
+    tui: TUI,
+    onDone: (result: string | null) => void,
+  ) {
     this.questions = questions;
     this.answers = questions.map(() => "");
     this.tui = tui;
@@ -318,7 +330,9 @@ class QnAComponent implements Component {
       const paddedContent = " ".repeat(leftPad) + content;
       const contentLen = visibleWidth(paddedContent);
       const rightPad = Math.max(0, boxWidth - contentLen - 2);
-      return this.dim("│") + paddedContent + " ".repeat(rightPad) + this.dim("│");
+      return (
+        this.dim("│") + paddedContent + " ".repeat(rightPad) + this.dim("│")
+      );
     };
 
     const emptyBoxLine = (): string => {
@@ -391,11 +405,17 @@ class QnAComponent implements Component {
 
     // Confirmation dialog or footer with controls
     if (this.showingConfirmation) {
-      lines.push(padToWidth(this.dim("├" + horizontalLine(boxWidth - 2) + "┤")));
+      lines.push(
+        padToWidth(this.dim("├" + horizontalLine(boxWidth - 2) + "┤")),
+      );
       const confirmMsg = `${this.yellow("Submit all answers?")} ${this.dim("(Enter/y to confirm, Esc/n to cancel)")}`;
-      lines.push(padToWidth(boxLine(truncateToWidth(confirmMsg, contentWidth))));
+      lines.push(
+        padToWidth(boxLine(truncateToWidth(confirmMsg, contentWidth))),
+      );
     } else {
-      lines.push(padToWidth(this.dim("├" + horizontalLine(boxWidth - 2) + "┤")));
+      lines.push(
+        padToWidth(this.dim("├" + horizontalLine(boxWidth - 2) + "┤")),
+      );
       const controls = `${this.dim("Tab/Enter")} next · ${this.dim("Shift+Tab")} prev · ${this.dim("Shift+Enter")} newline · ${this.dim("Esc")} cancel`;
       lines.push(padToWidth(boxLine(truncateToWidth(controls, contentWidth))));
     }
@@ -429,11 +449,16 @@ export default function (pi: ExtensionAPI) {
         const msg = entry.message;
         if ("role" in msg && msg.role === "assistant") {
           if (msg.stopReason !== "stop") {
-            ctx.ui.notify(`Last assistant message incomplete (${msg.stopReason})`, "error");
+            ctx.ui.notify(
+              `Last assistant message incomplete (${msg.stopReason})`,
+              "error",
+            );
             return;
           }
           const textParts = msg.content
-            .filter((c): c is { type: "text"; text: string } => c.type === "text")
+            .filter(
+              (c): c is { type: "text"; text: string } => c.type === "text",
+            )
             .map((c) => c.text);
           if (textParts.length > 0) {
             lastAssistantText = textParts.join("\n");
@@ -449,7 +474,10 @@ export default function (pi: ExtensionAPI) {
     }
 
     // Select the best model for extraction (prefer Codex mini, then haiku)
-    const extractionModel = await selectExtractionModel(ctx.model, ctx.modelRegistry);
+    const extractionModel = await selectExtractionModel(
+      ctx.model,
+      ctx.modelRegistry,
+    );
 
     // Run extraction with loader UI
     const extractionResult = await ctx.ui.custom<ExtractionResult | null>(
@@ -480,7 +508,9 @@ export default function (pi: ExtensionAPI) {
           }
 
           const responseText = response.content
-            .filter((c): c is { type: "text"; text: string } => c.type === "text")
+            .filter(
+              (c): c is { type: "text"; text: string } => c.type === "text",
+            )
             .map((c) => c.text)
             .join("\n");
 
@@ -506,9 +536,11 @@ export default function (pi: ExtensionAPI) {
     }
 
     // Show the Q&A component
-    const answersResult = await ctx.ui.custom<string | null>((tui, _theme, _kb, done) => {
-      return new QnAComponent(extractionResult.questions, tui, done);
-    });
+    const answersResult = await ctx.ui.custom<string | null>(
+      (tui, _theme, _kb, done) => {
+        return new QnAComponent(extractionResult.questions, tui, done);
+      },
+    );
 
     if (answersResult === null) {
       ctx.ui.notify("Cancelled", "info");
@@ -519,7 +551,8 @@ export default function (pi: ExtensionAPI) {
     pi.sendMessage(
       {
         customType: "answers",
-        content: "I answered your questions in the following way:\n\n" + answersResult,
+        content:
+          "I answered your questions in the following way:\n\n" + answersResult,
         display: true,
       },
       { triggerTurn: true },
@@ -527,7 +560,8 @@ export default function (pi: ExtensionAPI) {
   };
 
   pi.registerCommand("answer", {
-    description: "Extract questions from last assistant message into interactive Q&A",
+    description:
+      "Extract questions from last assistant message into interactive Q&A",
     handler: (_args, ctx) => answerHandler(ctx),
   });
 

@@ -2,7 +2,7 @@
 name: reviewer
 description: Code review specialist that validates implementation and fixes issues
 tools: read, grep, find, ls, bash
-model: openai-codex/gpt-5.3-codex
+model: openai-codex/gpt-5.4
 thinking: xhigh
 defaultReads: plan.md, progress.md
 defaultProgress: true
