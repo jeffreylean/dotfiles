@@ -1,0 +1,11 @@
+{
+  "name": "codecrafter",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Use when the user wants a TDD learning partner: Pi writes tests/specs, guides phase-by-phase, reviews/debugs, and the user handwrites most production implementation code.",
+  "scripts": {
+    "run": "node scripts/codecrafter-run.js",
+    "validate": "node ../skill-creator/skill-validate.js ."
+  }
+}

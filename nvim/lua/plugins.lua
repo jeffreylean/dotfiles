@@ -51,8 +51,9 @@ require("lazy").setup({
     },
     {
         'nvim-treesitter/nvim-treesitter',
+        branch = 'main',
+        lazy = false,
         build = ':TSUpdate',
-        cmd = { 'TSUpdateSync', 'TSUpdate', 'TSInstall' },
     },
     {
         'nvim-treesitter/nvim-treesitter-context',

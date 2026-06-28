@@ -9,6 +9,7 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 TIMESTAMP="$(date +%Y%m%d%H%M%S)"
+OS_NAME="$(uname -s)"
 MERGE_EXISTING=1
 MERGES=0
 BACKUPS=0
@@ -19,7 +20,7 @@ usage() {
 Usage: scripts/setup-symlinks.sh [--no-merge]
 
 Creates/refreshes symlinks for:
-  agents, herdr, ghostty, nvim, zed
+  agents, herdr, ghostty, nvim, tmux, zed
 
 Default conflict behavior is merge-aware:
   - existing repo-managed directories are merged into the repo source by copying
@@ -55,10 +56,10 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-case "$(uname -s)" in
+case "$OS_NAME" in
   Darwin|Linux) ;;
   *)
-    echo "Unsupported OS: $(uname -s). Only macOS and Linux are supported." >&2
+    echo "Unsupported OS: $OS_NAME. Only macOS and Linux are supported." >&2
     exit 1
     ;;
 esac
@@ -575,6 +576,37 @@ link_optional_local_path() {
   log "link local: $dst -> $src"
 }
 
+is_omarchy() {
+  [[ "$OS_NAME" == "Linux" && -d "${HOME}/.local/share/omarchy" ]]
+}
+
+remove_legacy_tmux_conf() {
+  local legacy="${HOME}/.tmux.conf"
+  local current
+
+  if [[ -L "$legacy" ]]; then
+    current="$(readlink "$legacy")"
+    rm "$legacy"
+    log "remove legacy: $legacy -> $current"
+  elif [[ -e "$legacy" ]]; then
+    backup_existing "$legacy" "legacy tmux config; Omarchy uses ${XDG_CONFIG_HOME}/tmux/tmux.conf"
+  fi
+}
+
+link_tmux_config() {
+  case "$OS_NAME" in
+    Darwin)
+      link_children "tmux" "${HOME}/.tmux"
+      ;;
+    Linux)
+      link_children "tmux" "${XDG_CONFIG_HOME}/tmux"
+      if is_omarchy; then
+        remove_legacy_tmux_conf
+      fi
+      ;;
+  esac
+}
+
 install_omarchy_local_integrations() {
   local omarchy_skill="${HOME}/.local/share/omarchy/default/omarchy-skill"
   local pi_theme_extension="${HOME}/.local/share/omarchy/default/pi/agent/extensions/omarchy-system-theme.ts"
@@ -597,6 +629,7 @@ main() {
   # App configs.
   link_path "nvim" "${XDG_CONFIG_HOME}/nvim"
   link_path "ghostty" "${XDG_CONFIG_HOME}/ghostty"
+  link_tmux_config
   link_path "herdr/config.toml" "${XDG_CONFIG_HOME}/herdr/config.toml"
   link_path "zed/settings.json" "${XDG_CONFIG_HOME}/zed/settings.json"
   link_path "zed/keymap.json" "${XDG_CONFIG_HOME}/zed/keymap.json"
@@ -607,6 +640,7 @@ main() {
   link_path "agents/pi/context.md" "${HOME}/.pi/agent/context.md"
   link_path "agents/pi/package.json" "${HOME}/.pi/agent/package.json"
   link_path "agents/pi/bun.lock" "${HOME}/.pi/agent/bun.lock"
+  link_path "agents/pi/keybindings.json" "${HOME}/.pi/agent/keybindings.json"
   link_path "agents/pi/agents" "${HOME}/.pi/agent/agents"
   # Skills/extensions stay real local directories so machine-specific entries
   # like Omarchy can coexist without being tracked in this repo.

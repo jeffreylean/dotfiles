@@ -1,0 +1,6 @@
+{
+  "vaultRoot": "~/Documents/knowledge-brain",
+  "defaultMode": "read-only",
+  "respectPrivate": true,
+  "maxInitialNotes": 5
+}

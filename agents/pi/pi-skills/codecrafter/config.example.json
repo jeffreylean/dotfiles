@@ -1,0 +1,9 @@
+{
+  "skillName": "codecrafter",
+  "version": "1",
+  "userPreferences": {
+    "outputFormat": "json",
+    "reviewMode": "standard"
+  },
+  "dataPath": "~/.local/share/pi-skills/codecrafter"
+}

@@ -1,0 +1,27 @@
+{
+  "name": "knowledge-brain-llm-wiki",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pi skill package for maintaining the Knowledge Brain Obsidian vault as an LLM-wiki.",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "pi-coding-agent",
+    "extension",
+    "skills",
+    "obsidian",
+    "llm-wiki"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  },
+  "scripts": {
+    "lint:vault": "node scripts/vault-lint.js --vault $HOME/Documents/knowledge-brain",
+    "export:vault": "node scripts/export-llm-bundle.js --vault $HOME/Documents/knowledge-brain --out $HOME/Documents/knowledge-brain/exports/llm-context.md",
+    "new:note": "node scripts/new-note.js --vault $HOME/Documents/knowledge-brain",
+    "search:vault": "node scripts/search-vault.js"
+  }
+}
