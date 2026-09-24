@@ -21,8 +21,7 @@ function fixture(t) {
   for (const dir of ['nvim', 'ghostty', 'tmux', 'agents/skills', 'agents/commands', 'agents/claude/rules', 'agents/claude/skills', 'agents/opencode/skills', 'agents/opencode/subagents', 'agents/pi/agents', 'agents/pi/pi-skills', 'agents/pi/extensions']) {
     fs.mkdirSync(path.join(root, dir), { recursive: true });
   }
-  for (const file of ['herdr/config.toml', 'zed/settings.json', 'zed/keymap.json', 'agents/AGENTS.md', 'agents/opencode/opencode.json', 'agents/pi/AGENTS.md', 'agents/pi/SYSTEM.md', 'agents/pi/context.md', 'agents/pi/bun.lock', 'agents/pi/keybindings.json']) write(file);
-  write('agents/pi/package.json', '{}');
+  for (const file of ['herdr/config.toml', 'zed/settings.json', 'zed/keymap.json', 'agents/AGENTS.md', 'agents/opencode/opencode.json', 'agents/pi/AGENTS.md', 'agents/pi/SYSTEM.md', 'agents/pi/context.md', 'agents/pi/keybindings.json']) write(file);
   write('agents/pi/settings.json', '{}');
   write('agents/claude/settings.json', '{}');
   write('agents/pi/packages.json', '{"packages":[]}');
@@ -81,12 +80,15 @@ test('fresh setup creates the existing dotfiles and per-harness layout', (t) => 
   assert.ok(f.apply().changes > 0);
   assertLink(path.join(f.home, '.agents/skills'), path.join(f.root, 'agents/skills'));
   assertLink(f.settings, path.join(f.root, 'agents/pi/settings.json'));
-  assertLink(path.join(f.home, '.claude/settings.json'), path.join(f.root, 'agents/claude/settings.json'));
+  assert.equal(fs.existsSync(path.join(f.home, '.claude/settings.json')), false);
   assertLink(path.join(f.home, '.claude/skills/common'), path.join(f.root, 'agents/skills/common'));
   assertLink(path.join(f.home, '.pi/agent/skills/pi-only'), path.join(f.root, 'agents/pi/pi-skills/pi-only'));
   assertLink(path.join(f.config, 'opencode/skills/opencode-only'), path.join(f.root, 'agents/opencode/skills/opencode-only'));
   assertLink(path.join(f.config, 'tmux/tmux.conf'), path.join(f.root, 'tmux/tmux.conf'));
   assert.ok(fs.lstatSync(path.join(f.home, '.pi/agent/skills')).isDirectory());
+  for (const name of ['package.json', 'bun.lock']) {
+    assert.equal(fs.readdirSync(path.join(f.home, '.pi/agent')).includes(name), false);
+  }
   assert.equal(f.calls.length, 0);
 });
 
@@ -184,7 +186,6 @@ test('missing managed links are repaired and a moved checkout is reconciled', (t
 test('dry-run and check create no home/state files and run no install commands', (t) => {
   const f = fixture(t);
   f.write('agents/pi/packages.json', '{"packages":["npm:pi-example@1.0.0"]}');
-  f.write('agents/pi/package.json', '{"dependencies":{"diff":"8.0.2"}}');
   assert.ok(f.apply({ dryRun: true }).changes > 0);
   assert.ok(f.apply({ check: true }).changes > 0);
   assert.equal(fs.existsSync(f.home), false);
@@ -251,17 +252,18 @@ test('npm dependencies use locks, skip healthy installs, and repair missing file
   assert.equal(f.calls.filter((call) => call.args[0] === 'ci').length, callsBefore + 2);
 });
 
-test('unlocked local dependencies do not save manifests, locks, or install Pi peer packages', (t) => {
+test('unlocked extension dependencies do not save manifests, locks, or install Pi peer packages', (t) => {
   const f = fixture(t);
+  const dir = 'agents/pi/extensions/wiki';
   const content = '{"dependencies":{"diff":"^8.0.2"},"peerDependencies":{"@earendil-works/pi-coding-agent":"*"}}';
-  f.write('agents/pi/package.json', content);
+  f.write(`${dir}/package.json`, content);
   f.apply();
   const call = f.calls.find((call) => call.args[0] === 'install');
   assert.ok(call.args.includes('--no-save'));
   assert.ok(call.args.includes('--package-lock=false'));
   assert.ok(call.args.includes('--legacy-peer-deps'));
-  assert.equal(fs.readFileSync(path.join(f.root, 'agents/pi/package.json'), 'utf8'), content);
-  assert.equal(fs.existsSync(path.join(f.root, 'agents/pi/package-lock.json')), false);
+  assert.equal(fs.readFileSync(path.join(f.root, dir, 'package.json'), 'utf8'), content);
+  assert.equal(fs.existsSync(path.join(f.root, dir, 'package-lock.json')), false);
 });
 
 test('package failures are retryable and leave an ownership record', (t) => {
@@ -307,7 +309,7 @@ test('links-only skips package/dependency installation and nested extension skil
   const f = fixture(t);
   f.write('agents/pi/packages.json', '{"packages":["npm:pi-example@1.0.0"]}');
   f.write('agents/pi/extensions/wiki/skills/retrieve/SKILL.md');
-  f.write('agents/pi/package.json', '{"dependencies":{"diff":"8.0.2"}}');
+  f.write('agents/pi/extensions/wiki/package.json', '{"dependencies":{"diff":"8.0.2"}}');
   f.apply({ linksOnly: true });
   assert.equal(f.calls.length, 0);
   assertLink(path.join(f.home, '.pi/agent/skills/retrieve'), path.join(f.root, 'agents/pi/extensions/wiki/skills/retrieve'));
@@ -380,7 +382,7 @@ test('external skill source symlinks are rejected instead of replicated', (t) =>
   assert.equal(fs.existsSync(path.join(f.home, '.agents/skills')), false);
 });
 
-test('settings migration backs up originals and preflights repo settings without importing local values', (t) => {
+test('Pi settings migration backs up the original while Claude settings stay local', (t) => {
   const f = fixture(t);
   const originalPi = JSON.stringify({ theme: 'local', packages: ['npm:pi-example@1.0.0'] });
   const originalClaude = JSON.stringify({ env: { LOCAL_SETTING: 'only-here' } });
@@ -395,13 +397,14 @@ test('settings migration backs up originals and preflights repo settings without
   local(path.join(f.home, '.pi/agent/npm/node_modules/pi-example/package.json'), '{"version":"1.0.0"}');
   assert.throws(() => f.apply(), /Existing path is not an owned link/);
   assert.equal(fs.readFileSync(f.settings, 'utf8'), originalPi);
+  assert.equal(fs.readFileSync(claude, 'utf8'), originalClaude);
   f.apply({ backup: true });
   assert.equal(f.calls.filter((call) => call.command === 'pi').length, 1);
   assert.equal(JSON.parse(fs.readFileSync(f.settings)).theme, 'repo');
-  assert.deepEqual(JSON.parse(fs.readFileSync(claude)), { hooks: {} });
+  assert.equal(fs.readFileSync(claude, 'utf8'), originalClaude);
   const backups = f.messages.filter((line) => line.startsWith('backup saved: ')).map((line) => line.slice('backup saved: '.length));
   assert.ok(backups.some((file) => fs.readFileSync(file, 'utf8') === originalPi));
-  assert.ok(backups.some((file) => fs.readFileSync(file, 'utf8') === originalClaude));
+  assert.ok(!backups.some((file) => fs.readFileSync(file, 'utf8') === originalClaude));
   assert.equal(fs.readFileSync(auth, 'utf8'), 'private fixture');
   assert.equal(fs.existsSync(path.join(f.root, 'agents/pi/auth.json')), false);
   assert.equal(f.apply().changes, 0);
@@ -416,16 +419,16 @@ test('allowing repo settings still rejects Pi package storage inside the checkou
   assert.equal(fs.existsSync(path.join(f.home, '.agents/skills')), false);
 });
 
-test('invalid repo settings fail before any link is created', (t) => {
+test('invalid repo Pi settings fail before any link is created', (t) => {
   const f = fixture(t);
-  f.write('agents/claude/settings.json', 'invalid JSON');
+  f.write('agents/pi/settings.json', 'invalid JSON');
   assert.throws(() => f.apply({ linksOnly: true }), SyntaxError);
   assert.equal(fs.existsSync(f.home), false);
 });
 
 test('failed dependency installation is not marked complete and can be retried', (t) => {
   const f = fixture(t);
-  f.write('agents/pi/package.json', '{"dependencies":{"diff":"8.0.2"}}');
+  f.write('agents/pi/extensions/wiki/package.json', '{"dependencies":{"diff":"8.0.2"}}');
   assert.throws(() => f.apply({ execute: () => false }), /Dependency installation failed/);
   assert.deepEqual(JSON.parse(fs.readFileSync(f.stateFile)).dependencies, {});
   f.apply();

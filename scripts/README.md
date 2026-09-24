@@ -31,15 +31,15 @@ remove `~/.tmux.conf`, or install Omarchy integrations.
 **Only checkout content and explicitly declared packages are installation sources.**
 No skills are collected from the current machine. Omarchy, personal skills, auth
 files, sessions, and machine-local caches are not copied into the checkout or
-replicated onto another machine. Pi and Claude's non-secret settings are explicitly
-Git-managed, as OpenCode's settings already are.
+replicated onto another machine. Pi and OpenCode settings are Git-managed;
+Claude settings stay machine-local. The repo contains an Atuin hook template.
 
 ## Skill and extension layout
 
 | Source | Destination |
 | --- | --- |
 | `agents/pi/settings.json` | `~/.pi/agent/settings.json` |
-| `agents/claude/settings.json` | `~/.claude/settings.json` |
+| `agents/claude/settings.json` | Atuin hook template for local `~/.claude/settings.json` (not linked) |
 | `agents/opencode/opencode.json` | `$XDG_CONFIG_HOME/opencode/opencode.json` |
 | `agents/skills/` | `~/.agents/skills` (whole-directory link) |
 | Shared skills plus `agents/claude/skills/` | Individual links in `~/.claude/skills/` |
@@ -90,32 +90,33 @@ symlink. Packages added interactively should also receive a manifest pin if they
 are intended for reproducible bootstrap. Existing local package files are not
 imported into Git.
 
-## Git-managed settings
+## Settings ownership
 
-Pi, Claude, and OpenCode settings are linked to their respective files under
-`agents/`. Existing local settings require `--backup` before being replaced; their
-values are **not** automatically merged into the repo. Package preflight reads the
-repo settings that will be installed, not the soon-to-be-backed-up local settings.
+Pi and OpenCode settings are linked to their respective files under `agents/`.
+Existing local Pi settings require `--backup` before being replaced; their values
+are **not** merged into the repo. Package preflight reads the repo settings that
+will be installed, not the soon-to-be-backed-up local settings.
+
+Claude `~/.claude/settings.json` stays machine-local and is not changed by the
+installer. `agents/claude/settings.json` is a template for manually merging Atuin
+hooks into local settings; never replace local preferences with the template.
+The hooks run only when `atuin` is available and do not fail a tool call if
+history capture fails. Atuin itself is not installed by this script.
 
 Preference changes and Pi package commands can change the Git working tree through
-these links. Review and commit intended changes. Pi 0.87.1's settings write-through
-was smoke-tested with an isolated local-package install; other harness/version
-writers may replace links. `--check` reports such replacements rather than silently
-importing them.
+managed links. Review and commit intended changes. Pi 0.87.1's settings
+write-through was smoke-tested with an isolated local-package install; other
+harness/version writers may replace links. `--check` reports such replacements.
 
-Keep secrets out of these files, including Claude `env` values and hook commands.
-Pi `auth.json`, Claude credentials, package storage, and sessions remain local.
-Known credential/Claude local-override paths under `agents/` are ignored as a
-safeguard; this does not replace reviewing settings before committing.
-
-Claude's Atuin hooks run only when `atuin` is available and do not fail a tool call
-if history capture fails. Atuin itself is not installed by this script. No Omarchy
-hooks are added.
+Keep secrets out of Git-managed settings and the Claude hook template. Pi
+`auth.json`, Claude local settings and credentials, package storage, and sessions
+remain local. Known credential/Claude local-override paths under `agents/` are
+ignored as a safeguard; review settings before committing.
 
 ## Local npm dependencies
 
-The installer checks `dependencies` in the Pi root package, repo skill packages,
-and repo extension packages. Metadata-only packages are skipped.
+The installer checks `dependencies` in repo skill and extension packages.
+Metadata-only packages are skipped.
 
 - With `package-lock.json`: use `npm ci --omit=dev`.
 - Without an npm lockfile: use `npm install` without saving manifests/locks and

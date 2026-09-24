@@ -94,13 +94,12 @@ function desiredLayout(root, home, config, platform) {
 
   link('agents/skills', path.join(home, '.agents/skills'));
   const pi = path.join(home, '.pi/agent');
-  for (const name of ['AGENTS.md', 'SYSTEM.md', 'context.md', 'settings.json', 'package.json', 'bun.lock', 'keybindings.json', 'agents']) {
+  for (const name of ['AGENTS.md', 'SYSTEM.md', 'context.md', 'settings.json', 'keybindings.json', 'agents']) {
     link(`agents/pi/${name}`, path.join(pi, name));
   }
   if (exists(path.join(root, 'agents/pi/prompts'))) link('agents/pi/prompts', path.join(pi, 'prompts'));
   children('agents/pi/extensions', path.join(pi, 'extensions'));
   skills('agents/pi/pi-skills', path.join(pi, 'skills'));
-  packageRoots.add(source('agents/pi'));
   for (const name of entries(path.join(root, 'agents/pi/extensions'))) {
     const relative = `agents/pi/extensions/${name}`;
     if (!fs.statSync(source(relative)).isDirectory()) continue;
@@ -109,7 +108,7 @@ function desiredLayout(root, home, config, platform) {
   }
 
   link('agents/AGENTS.md', path.join(home, '.claude/CLAUDE.md'));
-  link('agents/claude/settings.json', path.join(home, '.claude/settings.json'));
+  // Claude settings stay machine-local; the Atuin hook file is a merge template.
   link('agents/commands', path.join(home, '.claude/commands'));
   link('agents/claude/rules', path.join(home, '.claude/rules'));
   skills('agents/skills', path.join(home, '.claude/skills'));
@@ -228,7 +227,6 @@ export function install({
   // may be moved to a backup. The repo settings are now intentionally writable
   // through their symlink; credentials and package storage remain machine-local.
   const settings = readJSON(links.get(settingsPath));
-  readJSON(links.get(path.join(home, '.claude/settings.json')));
   const packageChanges = packages.filter((pkg) => !declarationMatches(settings, pkg) || !packageInstalled(pi, pkg));
   if (packageChanges.length && inside(realLocation(path.join(pi, 'npm')), fs.realpathSync(root))) {
     conflicts.push('Pi npm resolves into the checkout; keep package storage machine-local.');
