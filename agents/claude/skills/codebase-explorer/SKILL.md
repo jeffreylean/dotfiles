@@ -1,6 +1,7 @@
 ---
 name: codebase-explorer
-description: Use when user asks to understand a repository, generate a navigation map, explain architecture/execution flow, or surface interesting core implementations. Produces timestamped report in ~/Documents/my-brain/codebase. Uses a 5-phase divide-and-conquer strategy: scout → semantic partitioning → parallel workers → hierarchical reduction → cross-cutting validation.
+description: >-
+  Use when user asks to understand a repository, generate a navigation map, explain architecture/execution flow, or surface interesting core implementations. Produces timestamped report in ~/Documents/my-brain/codebase. Uses a 5-phase divide-and-conquer strategy: scout → semantic partitioning → parallel workers → hierarchical reduction → cross-cutting validation.
 version: 2.0.0
 ---
 

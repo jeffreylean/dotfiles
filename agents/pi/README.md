@@ -1,27 +1,20 @@
-# Pi subagents (pi-subagents format)
+# Pi subagents
 
-These agents are in `pi-subagents` markdown format (YAML frontmatter + prompt body).
+The definitions in [`agents/`](./agents/) use the `pi-subagents` Markdown format: YAML frontmatter followed by the agent prompt. Treat that directory as the current inventory rather than maintaining a duplicate filename list here.
 
-## Files
+## Installation
 
-- `agents/code-reviewer.md`
-- `agents/librarian.md`
-- `agents/opencode-expert.md`
-- `agents/oracle.md`
+The repository [installation script](../../scripts/installation.sh) links the directory at user scope:
 
-## Install location expected by pi-subagents
-
-User scope:
-- `~/.pi/agent/agents/{name}.md`
-
-Project scope:
-- `.pi/agents/{name}.md`
-
-## Quick install (user scope)
-
-```bash
-mkdir -p ~/.pi/agent/agents
-cp /Users/jeffreylean/dotfiles/agents/pi/agents/*.md ~/.pi/agent/agents/
+```text
+~/.pi/agent/agents -> <dotfiles>/agents/pi/agents
 ```
 
-Then use them with the `subagent` tool or slash commands (`/run`, `/chain`, `/parallel`) from the `pi-subagents` extension.
+Project-specific definitions may instead live under `.pi/agents/`.
+
+Use installed agents through the `subagent` tool. Inspect the available-agent registry before selecting an agent; choose by capability instead of assuming a particular agent name exists.
+
+Third-party Pi extensions are pinned in [`packages.json`](./packages.json). Add or
+update an entry and rerun `./scripts/installation.sh` from the repository root.
+See the [installation guide](../../scripts/README.md) for preview, backup, dependency,
+and idempotency behavior. Machine-local skills and Omarchy are not imported.

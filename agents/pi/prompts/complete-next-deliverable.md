@@ -52,7 +52,7 @@ Expected files:
 
 ## 2. Validate and Select Next Deliverable
 
-Find the `prd-deliverables` helper script. Prefer project/package skill paths under the active project root, then installed user skill paths. Do not scan arbitrary ancestors.
+Find the Pi-specific `prd-deliverables` helper script. Prefer the active project's Pi skill path, then installed user Pi skill paths. Do not scan arbitrary ancestors.
 
 ```bash
 find_prd_deliverables_script() {
@@ -61,10 +61,7 @@ find_prd_deliverables_script() {
 
   for candidate in \
     "$project_root/.pi/skills/prd-deliverables/scripts/prd-deliverables.js" \
-    "$project_root/.agents/skills/prd-deliverables/scripts/prd-deliverables.js" \
-    "$project_root/skills/prd-deliverables/scripts/prd-deliverables.js" \
     "$HOME/.pi/agent/skills/prd-deliverables/scripts/prd-deliverables.js" \
-    "$HOME/.agents/skills/prd-deliverables/scripts/prd-deliverables.js" \
     "$HOME/.config/pi/skills/prd-deliverables/scripts/prd-deliverables.js"; do
     if [ -f "$candidate" ]; then echo "$candidate"; return 0; fi
   done

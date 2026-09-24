@@ -79,6 +79,30 @@ require("lazy").setup({
     'tpope/vim-fugitive',
     'tpope/vim-rhubarb',
     'lewis6991/gitsigns.nvim',
+    {
+        'dlyongemallo/diffview-plus.nvim',
+        cmd = {
+            'DiffviewOpen',
+            'DiffviewClose',
+            'DiffviewFileHistory',
+            'DiffviewFocusFiles',
+            'DiffviewRefresh',
+            'DiffviewToggleFiles',
+        },
+        keys = {
+            { '<leader>gd', '<cmd>DiffviewOpen<cr>', desc = '[G]it [D]iff: unstaged and new files' },
+            { '<leader>gD', '<cmd>DiffviewOpen HEAD<cr>', desc = '[G]it [D]iff: all tracked local changes' },
+            { '<leader>gh', '<cmd>DiffviewFileHistory %<cr>', desc = '[G]it file [H]istory' },
+            { '<leader>gq', '<cmd>DiffviewClose<cr>', desc = '[G]it diff [Q]uit' },
+        },
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            'nvim-tree/nvim-web-devicons',
+        },
+        config = function()
+            require('diffview').setup()
+        end,
+    },
     -- Fast file finder
     {
         "dmtrKovalenko/fff.nvim",
