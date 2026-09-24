@@ -23,6 +23,8 @@ function fixture(t) {
   }
   for (const file of ['herdr/config.toml', 'zed/settings.json', 'zed/keymap.json', 'agents/AGENTS.md', 'agents/opencode/opencode.json', 'agents/pi/AGENTS.md', 'agents/pi/SYSTEM.md', 'agents/pi/context.md', 'agents/pi/bun.lock', 'agents/pi/keybindings.json']) write(file);
   write('agents/pi/package.json', '{}');
+  write('agents/pi/settings.json', '{}');
+  write('agents/claude/settings.json', '{}');
   write('agents/pi/packages.json', '{"packages":[]}');
   write('tmux/tmux.conf');
   write('agents/skills/common/SKILL.md', 'shared');
@@ -78,6 +80,8 @@ test('fresh setup creates the existing dotfiles and per-harness layout', (t) => 
   const f = fixture(t);
   assert.ok(f.apply().changes > 0);
   assertLink(path.join(f.home, '.agents/skills'), path.join(f.root, 'agents/skills'));
+  assertLink(f.settings, path.join(f.root, 'agents/pi/settings.json'));
+  assertLink(path.join(f.home, '.claude/settings.json'), path.join(f.root, 'agents/claude/settings.json'));
   assertLink(path.join(f.home, '.claude/skills/common'), path.join(f.root, 'agents/skills/common'));
   assertLink(path.join(f.home, '.pi/agent/skills/pi-only'), path.join(f.root, 'agents/pi/pi-skills/pi-only'));
   assertLink(path.join(f.config, 'opencode/skills/opencode-only'), path.join(f.root, 'agents/opencode/skills/opencode-only'));
@@ -189,7 +193,7 @@ test('dry-run and check create no home/state files and run no install commands',
 
 test('pinned packages install once, and adding/updating one installs only that package', (t) => {
   const f = fixture(t);
-  local(f.settings, JSON.stringify({ theme: 'mine', packages: ['npm:local-only@2.0.0'] }));
+  f.write('agents/pi/settings.json', JSON.stringify({ theme: 'mine', packages: ['npm:other@2.0.0'] }));
   f.write('agents/pi/packages.json', '{"packages":["npm:pi-example@1.0.0"]}');
   f.apply();
   assert.equal(f.calls.filter((call) => call.command === 'pi').length, 1);
@@ -203,8 +207,10 @@ test('pinned packages install once, and adding/updating one installs only that p
   assert.equal(f.calls.at(-1).args[1], 'npm:pi-example@1.1.0');
   const settings = JSON.parse(fs.readFileSync(f.settings));
   assert.equal(settings.theme, 'mine');
-  assert.ok(settings.packages.includes('npm:local-only@2.0.0'));
+  assert.ok(settings.packages.includes('npm:other@2.0.0'));
   assert.equal(settings.packages.filter((p) => p.startsWith('npm:pi-example@')).length, 1);
+  assertLink(f.settings, path.join(f.root, 'agents/pi/settings.json'));
+  assert.equal(JSON.parse(fs.readFileSync(path.join(f.root, 'agents/pi/settings.json'))).theme, 'mine');
   assert.equal(f.apply().changes, 0);
 });
 
@@ -220,10 +226,10 @@ test('a declared package with missing files is reinstalled', (t) => {
 test('custom package filters are preserved, and pin changes require manual reconciliation', (t) => {
   const f = fixture(t);
   const content = JSON.stringify({ packages: [{ source: 'npm:pi-example@0.9.0', skills: [] }] });
-  local(f.settings, content);
+  const source = f.write('agents/pi/settings.json', content);
   f.write('agents/pi/packages.json', '{"packages":["npm:pi-example@1.0.0"]}');
   assert.throws(() => f.apply(), /custom resource filters/);
-  assert.equal(fs.readFileSync(f.settings, 'utf8'), content);
+  assert.equal(fs.readFileSync(source, 'utf8'), content);
   assert.equal(f.calls.length, 0);
 });
 
@@ -326,7 +332,7 @@ test('an existing installation lock prevents link mutation', (t) => {
   assert.equal(f.calls.length, 0);
 });
 
-test('config roots and package settings cannot redirect writes into the checkout', (t) => {
+test('config roots and unowned package settings cannot redirect writes into the checkout', (t) => {
   const f = fixture(t);
   fs.mkdirSync(f.home, { recursive: true });
   assert.throws(() => f.apply({ config: path.join(f.root, 'new-config') }), /Config directory resolves into/);
@@ -338,7 +344,7 @@ test('config roots and package settings cannot redirect writes into the checkout
   const sourceSettings = f.write('private-settings.json', '{}');
   fs.mkdirSync(path.dirname(f.settings), { recursive: true });
   fs.symlinkSync(sourceSettings, f.settings);
-  assert.throws(() => f.apply(), /settings.json resolves into the checkout/);
+  assert.throws(() => f.apply(), /Existing path is not an owned link/);
   assert.equal(fs.readFileSync(sourceSettings, 'utf8'), '{}');
 });
 
@@ -357,7 +363,7 @@ test('pruning never follows a replaced directory even when no desired children r
 test('matching installed packages with custom resource filters are skipped unchanged', (t) => {
   const f = fixture(t);
   const content = JSON.stringify({ packages: [{ source: 'npm:pi-example@1.0.0', skills: [] }] });
-  local(f.settings, content);
+  f.write('agents/pi/settings.json', content);
   local(path.join(f.home, '.pi/agent/npm/node_modules/pi-example/package.json'), '{"version":"1.0.0"}');
   f.write('agents/pi/packages.json', '{"packages":["npm:pi-example@1.0.0"]}');
   f.apply();
@@ -372,6 +378,49 @@ test('external skill source symlinks are rejected instead of replicated', (t) =>
   fs.symlinkSync(outside, path.join(f.root, 'agents/skills/external'));
   assert.throws(() => f.apply(), /Source escapes the dotfiles checkout/);
   assert.equal(fs.existsSync(path.join(f.home, '.agents/skills')), false);
+});
+
+test('settings migration backs up originals and preflights repo settings without importing local values', (t) => {
+  const f = fixture(t);
+  const originalPi = JSON.stringify({ theme: 'local', packages: ['npm:pi-example@1.0.0'] });
+  const originalClaude = JSON.stringify({ env: { LOCAL_SETTING: 'only-here' } });
+  local(f.settings, originalPi);
+  const claude = path.join(f.home, '.claude/settings.json');
+  local(claude, originalClaude);
+  const auth = path.join(f.home, '.pi/agent/auth.json');
+  local(auth, 'private fixture');
+  f.write('agents/pi/settings.json', '{"theme":"repo","packages":[]}');
+  f.write('agents/claude/settings.json', '{"hooks":{}}');
+  f.write('agents/pi/packages.json', '{"packages":["npm:pi-example@1.0.0"]}');
+  local(path.join(f.home, '.pi/agent/npm/node_modules/pi-example/package.json'), '{"version":"1.0.0"}');
+  assert.throws(() => f.apply(), /Existing path is not an owned link/);
+  assert.equal(fs.readFileSync(f.settings, 'utf8'), originalPi);
+  f.apply({ backup: true });
+  assert.equal(f.calls.filter((call) => call.command === 'pi').length, 1);
+  assert.equal(JSON.parse(fs.readFileSync(f.settings)).theme, 'repo');
+  assert.deepEqual(JSON.parse(fs.readFileSync(claude)), { hooks: {} });
+  const backups = f.messages.filter((line) => line.startsWith('backup saved: ')).map((line) => line.slice('backup saved: '.length));
+  assert.ok(backups.some((file) => fs.readFileSync(file, 'utf8') === originalPi));
+  assert.ok(backups.some((file) => fs.readFileSync(file, 'utf8') === originalClaude));
+  assert.equal(fs.readFileSync(auth, 'utf8'), 'private fixture');
+  assert.equal(fs.existsSync(path.join(f.root, 'agents/pi/auth.json')), false);
+  assert.equal(f.apply().changes, 0);
+});
+
+test('allowing repo settings still rejects Pi package storage inside the checkout', (t) => {
+  const f = fixture(t);
+  fs.mkdirSync(path.join(f.home, '.pi/agent'), { recursive: true });
+  fs.symlinkSync(f.root, path.join(f.home, '.pi/agent/npm'));
+  f.write('agents/pi/packages.json', '{"packages":["npm:pi-example@1.0.0"]}');
+  assert.throws(() => f.apply(), /Pi npm resolves into the checkout/);
+  assert.equal(fs.existsSync(path.join(f.home, '.agents/skills')), false);
+});
+
+test('invalid repo settings fail before any link is created', (t) => {
+  const f = fixture(t);
+  f.write('agents/claude/settings.json', 'invalid JSON');
+  assert.throws(() => f.apply({ linksOnly: true }), SyntaxError);
+  assert.equal(fs.existsSync(f.home), false);
 });
 
 test('failed dependency installation is not marked complete and can be retried', (t) => {

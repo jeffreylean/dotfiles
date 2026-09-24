@@ -1,0 +1,53 @@
+{
+  "lastChangelogVersion": "0.87.1",
+  "theme": "dark",
+  "defaultProvider": "openai-codex",
+  "defaultModel": "gpt-6-astra",
+  "defaultThinkingLevel": "high",
+  "hideThinkingBlock": true,
+  "packages": [
+    "npm:pi-web-access@0.30.0",
+    "npm:@ff-labs/pi-fff@0.11.0",
+    "npm:pi-subagents@0.70.1",
+    "npm:pi-codex-goal@0.3.0",
+    "npm:pi-intercom@0.13.0",
+    "npm:@roodriigoooo/pi-hunk@0.9.0"
+  ],
+  "subagents": {
+    "agentOverrides": {
+      "context-builder": {
+        "thinking": "high"
+      },
+      "delegate": {
+        "thinking": "medium"
+      },
+      "planner": {
+        "thinking": "xhigh"
+      },
+      "researcher": {
+        "thinking": "medium"
+      },
+      "reviewer": {
+        "thinking": "high",
+        "model": "openai-codex/gpt-6-sol"
+      },
+      "scout": {
+        "thinking": "xhigh",
+        "model": "openai-codex/gpt-6-luna"
+      },
+      "worker": {
+        "thinking": "medium",
+        "model": "openai-codex/gpt-6-sol"
+      },
+      "oracle": {
+        "thinking": "xhigh",
+        "model": "openai-codex/gpt-6-astra"
+      },
+      "evidence-auditor": {
+        "thinking": "high",
+        "model": "openai-codex/gpt-6-sol"
+      }
+    },
+    "defaultModel": "openai-codex/gpt-5.6-terra"
+  }
+}

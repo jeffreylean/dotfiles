@@ -94,7 +94,7 @@ function desiredLayout(root, home, config, platform) {
 
   link('agents/skills', path.join(home, '.agents/skills'));
   const pi = path.join(home, '.pi/agent');
-  for (const name of ['AGENTS.md', 'SYSTEM.md', 'context.md', 'package.json', 'bun.lock', 'keybindings.json', 'agents']) {
+  for (const name of ['AGENTS.md', 'SYSTEM.md', 'context.md', 'settings.json', 'package.json', 'bun.lock', 'keybindings.json', 'agents']) {
     link(`agents/pi/${name}`, path.join(pi, name));
   }
   if (exists(path.join(root, 'agents/pi/prompts'))) link('agents/pi/prompts', path.join(pi, 'prompts'));
@@ -109,6 +109,7 @@ function desiredLayout(root, home, config, platform) {
   }
 
   link('agents/AGENTS.md', path.join(home, '.claude/CLAUDE.md'));
+  link('agents/claude/settings.json', path.join(home, '.claude/settings.json'));
   link('agents/commands', path.join(home, '.claude/commands'));
   link('agents/claude/rules', path.join(home, '.claude/rules'));
   skills('agents/skills', path.join(home, '.claude/skills'));
@@ -223,14 +224,14 @@ export function install({
   if (new Set(packages.map((pkg) => pkg.name)).size !== packages.length) throw new Error('Duplicate package names in agents/pi/packages.json');
   const pi = path.join(home, '.pi/agent');
   const settingsPath = path.join(pi, 'settings.json');
-  const settings = exists(settingsPath) ? readJSON(settingsPath) : {};
+  // Preflight the settings that will actually be linked, not local settings that
+  // may be moved to a backup. The repo settings are now intentionally writable
+  // through their symlink; credentials and package storage remain machine-local.
+  const settings = readJSON(links.get(settingsPath));
+  readJSON(links.get(path.join(home, '.claude/settings.json')));
   const packageChanges = packages.filter((pkg) => !declarationMatches(settings, pkg) || !packageInstalled(pi, pkg));
-  if (packageChanges.length) {
-    for (const file of [settingsPath, path.join(pi, 'npm')]) {
-      if (inside(realLocation(file), fs.realpathSync(root))) {
-        conflicts.push(`Pi ${path.basename(file)} resolves into the checkout; keep mutable Pi settings and package storage machine-local.`);
-      }
-    }
+  if (packageChanges.length && inside(realLocation(path.join(pi, 'npm')), fs.realpathSync(root))) {
+    conflicts.push('Pi npm resolves into the checkout; keep package storage machine-local.');
   }
   // Preserve resource filters: don't let a CLI pin change silently broaden package permissions.
   for (const pkg of packageChanges) {

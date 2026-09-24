@@ -30,13 +30,17 @@ remove `~/.tmux.conf`, or install Omarchy integrations.
 
 **Only checkout content and explicitly declared packages are installation sources.**
 No skills are collected from the current machine. Omarchy, personal skills, auth
-files, sessions, and machine-local settings are not copied into the checkout or
-replicated onto another machine.
+files, sessions, and machine-local caches are not copied into the checkout or
+replicated onto another machine. Pi and Claude's non-secret settings are explicitly
+Git-managed, as OpenCode's settings already are.
 
 ## Skill and extension layout
 
 | Source | Destination |
 | --- | --- |
+| `agents/pi/settings.json` | `~/.pi/agent/settings.json` |
+| `agents/claude/settings.json` | `~/.claude/settings.json` |
+| `agents/opencode/opencode.json` | `$XDG_CONFIG_HOME/opencode/opencode.json` |
 | `agents/skills/` | `~/.agents/skills` (whole-directory link) |
 | Shared skills plus `agents/claude/skills/` | Individual links in `~/.claude/skills/` |
 | `agents/opencode/skills/` | Individual links in `$XDG_CONFIG_HOME/opencode/skills/` |
@@ -75,10 +79,38 @@ edit the version and rerun. Custom Pi resource-filter objects are preserved;
 if such a package needs installation or a pin change, setup asks you to reconcile
 it manually instead of silently broadening enabled resources.
 
-Removing an entry stops managing it; it does **not** uninstall that package.
-Use `pi remove <source>` explicitly if you also want it removed from that machine.
-Unlisted installed packages remain untouched and are not replicated elsewhere.
-Pi settings and credentials remain machine-local, not symlinked into Git.
+Removing a manifest entry stops installer management; it does **not** uninstall
+that package or remove its declaration from Pi settings. Use `pi remove <source>`
+and remove the manifest entry to stop sharing it. Pi can still discover/install
+packages declared in the Git-managed settings even if they are not in the manifest.
+
+Keep the manifest and settings package entries aligned: the manifest supplies
+bootstrap pins, and `pi install` reconciles those declarations through the settings
+symlink. Packages added interactively should also receive a manifest pin if they
+are intended for reproducible bootstrap. Existing local package files are not
+imported into Git.
+
+## Git-managed settings
+
+Pi, Claude, and OpenCode settings are linked to their respective files under
+`agents/`. Existing local settings require `--backup` before being replaced; their
+values are **not** automatically merged into the repo. Package preflight reads the
+repo settings that will be installed, not the soon-to-be-backed-up local settings.
+
+Preference changes and Pi package commands can change the Git working tree through
+these links. Review and commit intended changes. Pi 0.87.1's settings write-through
+was smoke-tested with an isolated local-package install; other harness/version
+writers may replace links. `--check` reports such replacements rather than silently
+importing them.
+
+Keep secrets out of these files, including Claude `env` values and hook commands.
+Pi `auth.json`, Claude credentials, package storage, and sessions remain local.
+Known credential/Claude local-override paths under `agents/` are ignored as a
+safeguard; this does not replace reviewing settings before committing.
+
+Claude's Atuin hooks run only when `atuin` is available and do not fail a tool call
+if history capture fails. Atuin itself is not installed by this script. No Omarchy
+hooks are added.
 
 ## Local npm dependencies
 

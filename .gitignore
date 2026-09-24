@@ -7,5 +7,10 @@ node_modules/
 # Pi local state/cache
 agents/pi/pi-skills/.pi/
 
+# Credentials and machine-local agent overrides (never share through Git)
+agents/pi/auth.json
+agents/claude/.credentials.json
+agents/claude/settings.local.json
+
 # Logs
 *.log
