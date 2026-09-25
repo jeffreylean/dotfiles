@@ -11,7 +11,8 @@
     "npm:pi-subagents@0.70.1",
     "npm:pi-codex-goal@0.3.0",
     "npm:pi-intercom@0.13.0",
-    "npm:@roodriigoooo/pi-hunk@0.9.0"
+    "npm:@roodriigoooo/pi-hunk@0.9.0",
+    "npm:@plannotator/pi-extension"
   ],
   "subagents": {
     "agentOverrides": {
