@@ -1,0 +1,12 @@
+{
+  "name": "motiongfx-mox",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Author MotionGfx graphics and export validated, editable Moxie projects.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "validate": "node \"${SKILL_CREATOR_ROOT:-$HOME/.pi/agent/skills/skill-creator}/skill-validate.js\" ."
+  }
+}

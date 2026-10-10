@@ -1,0 +1,4 @@
+{
+  "moxieRoot": "/path/to/moxie",
+  "projectRoot": "/path/to/new-motion-project"
+}

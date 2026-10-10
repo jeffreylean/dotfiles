@@ -1,0 +1,63 @@
+{
+  "schema": 1,
+  "test_project": "$HOME/Documents/motiongfx-skill-validation",
+  "source_revisions": {
+    "bevy": "0.19",
+    "moxieRevision": "89617fe8374d6ad02bc89e34f534b6646e4152e2",
+    "motiongfxRevision": "70ab0daa1c1a118c09958d4325abe16b762062fe",
+    "tools": {
+      "cargo": "cargo 1.96.0 (30a34c682 2026-05-25)",
+      "rustc": "rustc 1.96.0 (ac68faa20 2026-05-25)"
+    },
+    "scope": "Structural compatibility checks only; cargo build and actual .mox import are still required."
+  },
+  "helpers": {
+    "node_tests": 16,
+    "bun_tests": 16,
+    "structural_validator": "passed under Node and Bun",
+    "cli_modes": [
+      "node",
+      "bun",
+      "executable shebang"
+    ]
+  },
+  "rust_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "native_export": {
+    "sample_times": 365,
+    "scope": "native timeline versus serialized animation; includes backward seeks; not a visual-quality test",
+    "status": "pass",
+    "transform_comparisons": 1825
+  },
+  "import": {
+    "scope": "actual .mox deserialization, reflected spawning, compile, stage, dependency loading, finite poses and backward seek; visual review still required",
+    "status": "pass",
+    "transform_checks": 366
+  },
+  "frames": {
+    "status": "pass",
+    "frames": 180,
+    "width": 1280,
+    "height": 720,
+    "scope": "all requested PNG frames exist with the manifest dimensions; not encoded-video validation"
+  },
+  "artifact_hashes": {
+    "scene.mox": "78a567e69ca57103a54d2d0995ed416d6cee4ff30e7860dca633f1d64137b75a",
+    "assets/scene-r1.glb": "a51f153c93b978adeb9cca1b2bc0fd80181f3bc1afbc69f20901e14fe0626bdf",
+    "manifest.json": "a06a6564cea9e9e134b83deac38726f7753ca35b00de927131e03ac81244229e",
+    "Cargo.lock": "2113682ef3c3c8d15bbcf3495471fc596a3e697d7946632cc7625369d7a9f867"
+  },
+  "starter_source_hashes": {
+    "export.rs": "5065d37f9f94a7fdd74e88f13f2b2eb6b451fefe065326f4f4e3ed0e36d55dc3",
+    "preview.rs": "2eb1d3f21d90df502989108c86bb76ba67ed91b8849f3d172ec47228392c5087",
+    "main.rs": "5be036fac52ccf9e319475a158fe7011baa5f0f1b6814d5f8b1e769095845a87",
+    "geometry.rs": "bfab966f63f18bd46d9a303ebd1da1ec6c31c8714c6baa4d532bca0c30c7e254"
+  },
+  "not_performed": [
+    "manual Moxie editor UI review",
+    "video encoding/decoding",
+    "Linux/Windows runtime tests"
+  ]
+}
