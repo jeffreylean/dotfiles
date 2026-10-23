@@ -119,8 +119,12 @@ function desiredLayout(root, home, config, platform) {
   // Claude settings stay machine-local; the Atuin hook file is a merge template.
   link('agents/commands', path.join(home, '.claude/commands'));
   link('agents/claude/rules', path.join(home, '.claude/rules'));
-  // Claude gets these from the mattpocock-skills plugin instead.
+  // Claude gets these from the mattpocock-skills plugin instead, except
+  // grill-with-docs and the skills it calls.
   skills('agents/skills', path.join(home, '.claude/skills'), ['matt-skills']);
+  for (const name of ['grill-with-docs', 'grilling', 'domain-modeling']) {
+    skills(`agents/skills/matt-skills/${name}`, path.join(home, '.claude/skills'));
+  }
   skills('agents/claude/skills', path.join(home, '.claude/skills'));
   link('agents/AGENTS.md', path.join(config, 'opencode/AGENTS.md'));
   link('agents/commands', path.join(config, 'opencode/command'));

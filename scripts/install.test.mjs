@@ -28,6 +28,7 @@ function fixture(t) {
   write('agents/claude/plugins.json', '{"marketplaces":{},"plugins":[]}');
   write('tmux/tmux.conf');
   write('agents/skills/common/SKILL.md', 'shared');
+  for (const name of ['grill-with-docs', 'grilling', 'domain-modeling']) write(`agents/skills/matt-skills/${name}/SKILL.md`);
   write('agents/claude/skills/claude-only/SKILL.md', 'claude');
   write('agents/opencode/skills/opencode-only/SKILL.md', 'opencode');
   write('agents/pi/pi-skills/pi-only/SKILL.md', 'pi');
@@ -131,12 +132,15 @@ test('new skill and extension additions are discovered without editing a manifes
   assert.equal(f.apply().changes, 0);
 });
 
-test('Matt Pocock skills stay shared but are not linked for Claude, which uses the plugin', (t) => {
+test('Matt Pocock skills stay shared; Claude links only grill-with-docs and its dependencies', (t) => {
   const f = fixture(t);
   f.write('agents/skills/matt-skills/tdd/SKILL.md');
   f.apply();
   assert.ok(fs.existsSync(path.join(f.home, '.agents/skills/matt-skills/tdd/SKILL.md')));
   assert.equal(fs.existsSync(path.join(f.home, '.claude/skills/tdd')), false);
+  for (const name of ['grill-with-docs', 'grilling', 'domain-modeling']) {
+    assert.ok(fs.existsSync(path.join(f.home, `.claude/skills/${name}/SKILL.md`)));
+  }
   assert.ok(fs.existsSync(path.join(f.home, '.claude/skills/common')));
 });
 
@@ -182,7 +186,7 @@ test('conflicts fail before modifying links; explicit backup preserves local con
   const backup = f.messages.find((line) => line.startsWith('backup saved: ')).slice('backup saved: '.length);
   assert.ok(backup.startsWith(path.join(f.stateHome, 'dotfiles/backups')));
   assert.equal(fs.readFileSync(path.join(backup, 'local.txt'), 'utf8'), 'keep me');
-  assert.deepEqual(fs.readdirSync(path.dirname(path.dirname(file))).sort(), ['claude-only', 'common']);
+  assert.deepEqual(fs.readdirSync(path.dirname(path.dirname(file))).sort(), ['claude-only', 'common', 'domain-modeling', 'grill-with-docs', 'grilling']);
   assert.equal(f.apply().changes, 0);
 });
 

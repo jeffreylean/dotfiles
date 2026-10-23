@@ -42,7 +42,7 @@ Claude settings stay machine-local. The repo contains an Atuin hook template.
 | `agents/claude/settings.json` | Atuin hook template for local `~/.claude/settings.json` (not linked) |
 | `agents/opencode/opencode.json` | `$XDG_CONFIG_HOME/opencode/opencode.json` |
 | `agents/skills/` | `~/.agents/skills` (whole-directory link) |
-| Shared skills (except `matt-skills/`) plus `agents/claude/skills/` | Individual links in `~/.claude/skills/` |
+| Shared skills (`matt-skills/` only `grill-with-docs`, `grilling`, `domain-modeling`) plus `agents/claude/skills/` | Individual links in `~/.claude/skills/` |
 | `agents/opencode/skills/` | Individual links in `$XDG_CONFIG_HOME/opencode/skills/` |
 | `agents/pi/pi-skills/` | Individual links in `~/.pi/agent/skills/` |
 | `agents/pi/extensions/` | Individual links in `~/.pi/agent/extensions/` |
@@ -50,7 +50,9 @@ Claude settings stay machine-local. The repo contains an Atuin hook template.
 
 Pi and OpenCode discover the shared root directly. Claude gets explicit shared
 skill links, except `agents/skills/matt-skills/`: Claude loads those from the
-`mattpocock-skills@claude-plugins-official` plugin instead. OpenCode also
+`mattpocock-skills@claude-plugins-official` plugin instead. The exceptions are
+`grill-with-docs` and the skills it calls (`grilling`, `domain-modeling`), which
+are linked for Claude directly. OpenCode also
 supports Claude-compatible discovery locations, so a Claude directory is not an
 isolation guarantee.
 
