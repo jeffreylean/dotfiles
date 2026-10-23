@@ -25,6 +25,7 @@ function fixture(t) {
   write('agents/pi/settings.json', '{}');
   write('agents/claude/settings.json', '{}');
   write('agents/pi/packages.json', '{"packages":[]}');
+  write('agents/claude/plugins.json', '{"marketplaces":{},"plugins":[]}');
   write('tmux/tmux.conf');
   write('agents/skills/common/SKILL.md', 'shared');
   write('agents/claude/skills/claude-only/SKILL.md', 'claude');
@@ -34,8 +35,24 @@ function fixture(t) {
   const calls = [];
   const messages = [];
   const settings = path.join(home, '.pi/agent/settings.json');
+  const claude = { marketplaces: new Set(), plugins: new Map(), reads: [], dropInstalls: false };
+  const fakeCapture = (command, args) => {
+    assert.equal(command, 'claude');
+    claude.reads.push(args.join(' '));
+    if (args.join(' ') === 'plugin marketplace list --json') return JSON.stringify([...claude.marketplaces].map((name) => ({ name, source: 'github' })));
+    assert.equal(args.join(' '), 'plugin list --json');
+    return JSON.stringify([...claude.plugins].map(([id, enabled]) => ({ id, enabled, scope: 'user' })));
+  };
   const fakeExecute = (command, args, cwd) => {
     calls.push({ command, args, cwd });
+    if (command === 'claude') {
+      const value = args.at(-1);
+      if (args[1] === 'install') {
+        if (!claude.marketplaces.has(value.split('@')[1])) return false;
+        if (!claude.dropInstalls) claude.plugins.set(value, true);
+      } else claude.marketplaces.add(value.split('/')[1]);
+      return true;
+    }
     if (command === 'pi') {
       assert.equal(args[0], 'install');
       const source = args[1];
@@ -59,8 +76,8 @@ function fixture(t) {
     fs.writeFileSync(path.join(cwd, 'node_modules/fixture-installed'), 'installed');
     return true;
   };
-  const options = { root, home, config, stateHome, platform: 'linux', execute: fakeExecute, log: (line) => messages.push(line) };
-  return { root, home, config, stateHome, write, settings, calls, messages, options,
+  const options = { root, home, config, stateHome, platform: 'linux', execute: fakeExecute, capture: fakeCapture, log: (line) => messages.push(line) };
+  return { root, home, config, stateHome, write, settings, calls, messages, options, claude,
     stateFile: path.join(stateHome, 'dotfiles/installation.json'),
     apply: (overrides = {}) => install({ ...options, ...overrides }),
   };
@@ -440,6 +457,111 @@ test('failed dependency installation is not marked complete and can be retried',
   f.write('agents/pi/extensions/wiki/package.json', '{"dependencies":{"diff":"8.0.2"}}');
   assert.throws(() => f.apply({ execute: () => false }), /Dependency installation failed/);
   assert.deepEqual(JSON.parse(fs.readFileSync(f.stateFile)).dependencies, {});
+  f.apply();
+  assert.equal(f.apply().changes, 0);
+});
+
+const CLAUDE_MANIFEST = JSON.stringify({
+  marketplaces: { 'claude-plugins-official': 'anthropics/claude-plugins-official', 'pstack-claude': 'michael-denyer/pstack-claude' },
+  plugins: ['cloudflare@claude-plugins-official', 'pstack@pstack-claude'],
+});
+const claudeCalls = (f) => f.calls.filter((call) => call.command === 'claude').map((call) => call.args.join(' '));
+
+test('Claude marketplaces are added before plugins, only the missing ones, and a second run installs nothing', (t) => {
+  const f = fixture(t);
+  f.write('agents/claude/plugins.json', CLAUDE_MANIFEST);
+  f.claude.marketplaces.add('pstack-claude');
+  f.apply();
+  assert.deepEqual(claudeCalls(f), [
+    'plugin marketplace add anthropics/claude-plugins-official',
+    'plugin install cloudflare@claude-plugins-official',
+    'plugin install pstack@pstack-claude',
+  ]);
+  assert.ok(f.calls.filter((call) => call.command === 'claude').every((call) => call.cwd === f.home));
+  assert.equal(f.apply().changes, 0);
+  assert.equal(claudeCalls(f).length, 3);
+});
+
+test('a Claude plugin the user disabled locally is neither reinstalled nor re-enabled', (t) => {
+  const f = fixture(t);
+  f.write('agents/claude/plugins.json', '{"marketplaces":{"pstack-claude":"michael-denyer/pstack-claude"},"plugins":["pstack@pstack-claude"]}');
+  f.claude.marketplaces.add('pstack-claude');
+  f.claude.plugins.set('pstack@pstack-claude', false);
+  f.apply();
+  assert.equal(f.calls.length, 0);
+  assert.equal(f.claude.plugins.get('pstack@pstack-claude'), false);
+});
+
+test('undeclared installed Claude plugins and marketplaces are left alone', (t) => {
+  const f = fixture(t);
+  f.write('agents/claude/plugins.json', '{"marketplaces":{"pstack-claude":"michael-denyer/pstack-claude"},"plugins":["pstack@pstack-claude"]}');
+  f.claude.marketplaces.add('mine');
+  f.claude.plugins.set('local@mine', true);
+  f.apply();
+  assert.deepEqual(claudeCalls(f), ['plugin marketplace add michael-denyer/pstack-claude', 'plugin install pstack@pstack-claude']);
+  assert.ok(f.claude.marketplaces.has('mine') && f.claude.plugins.has('local@mine'));
+});
+
+test('links-only makes no Claude queries or calls', (t) => {
+  const f = fixture(t);
+  f.write('agents/claude/plugins.json', CLAUDE_MANIFEST);
+  f.apply({ linksOnly: true });
+  assert.equal(f.calls.length, 0);
+  assert.deepEqual(f.claude.reads, []);
+});
+
+test('an empty Claude manifest makes no Claude queries', (t) => {
+  const f = fixture(t);
+  f.apply();
+  assert.deepEqual(f.claude.reads, []);
+});
+
+test('dry-run and check report missing Claude plugins, count them, and install nothing', (t) => {
+  const f = fixture(t);
+  f.apply({ linksOnly: true });
+  f.write('agents/claude/plugins.json', CLAUDE_MANIFEST);
+  f.messages.length = 0;
+  assert.equal(f.apply({ dryRun: true }).changes, 4);
+  assert.equal(f.apply({ check: true }).changes, 4);
+  assert.deepEqual(f.messages.slice(0, 4), [
+    'would add Claude marketplace: claude-plugins-official (anthropics/claude-plugins-official)',
+    'would add Claude marketplace: pstack-claude (michael-denyer/pstack-claude)',
+    'would install Claude plugin: cloudflare@claude-plugins-official',
+    'would install Claude plugin: pstack@pstack-claude',
+  ]);
+  assert.equal(f.calls.length, 0);
+  assert.equal(f.claude.plugins.size, 0);
+  f.apply();
+  assert.equal(f.apply({ check: true }).changes, 0);
+});
+
+test('invalid Claude manifests fail before any link is created', (t) => {
+  const f = fixture(t);
+  const bad = (manifest, pattern) => {
+    f.write('agents/claude/plugins.json', JSON.stringify(manifest));
+    assert.throws(() => f.apply(), pattern);
+    assert.equal(fs.existsSync(f.home), false);
+  };
+  bad({ marketplaces: {}, plugins: ['tool@undeclared'] }, /tool@undeclared uses undeclared marketplace undeclared/);
+  bad({ marketplaces: { m: 'o/r' }, plugins: ['a@m', 'a@m'] }, /Duplicate Claude plugin: a@m/);
+  bad({ marketplaces: { m: 'o/r' }, plugins: ['no-marketplace'] }, /Expected Claude plugin id/);
+  bad({ marketplaces: { m: 'https://example.com/x.git' }, plugins: [] }, /Invalid Claude marketplace "m"/);
+  bad({ marketplaces: {}, plugins: 'a@m' }, /must be/);
+  assert.equal(f.calls.length, 0);
+});
+
+test('a Claude install that reports success but does not appear in the plugin list fails', (t) => {
+  const f = fixture(t);
+  f.write('agents/claude/plugins.json', CLAUDE_MANIFEST);
+  f.claude.dropInstalls = true;
+  assert.throws(() => f.apply(), /Claude did not install cloudflare@claude-plugins-official, pstack@pstack-claude.*claude plugin list/);
+  assert.equal(fs.existsSync(path.join(f.stateHome, 'dotfiles/installation.lock')), false);
+});
+
+test('a failed Claude command throws and a retry finishes the install', (t) => {
+  const f = fixture(t);
+  f.write('agents/claude/plugins.json', CLAUDE_MANIFEST);
+  assert.throws(() => f.apply({ execute: () => false }), /Claude marketplace add failed/);
   f.apply();
   assert.equal(f.apply().changes, 0);
 });

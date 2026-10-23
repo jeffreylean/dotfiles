@@ -6,7 +6,7 @@ From a clone of this repository on Linux or macOS:
 # Inspect first. --backup shows how conflicting paths would be preserved.
 ./scripts/installation.sh --dry-run --backup
 
-# Install links, declared Pi packages, and skill/extension npm dependencies.
+# Install links, declared Pi packages and Claude plugins, and skill/extension npm dependencies.
 ./scripts/installation.sh --backup
 
 # Subsequent runs normally need no flags.
@@ -18,7 +18,7 @@ need not be at `~/Projects/dotfiles`.
 
 ## Prerequisites and scope
 
-Install **Node.js 22+**, **npm**, and **Pi** first. Harness executables, login,
+Install **Node.js 22+**, **npm**, **Pi**, and **Claude Code** first. Harness executables, login,
 credentials, and arbitrary system tools mentioned in skill prose are not installed
 by this script. The Bash entry point delegates filesystem/JSON reconciliation to a
 dependency-free Node helper.
@@ -92,6 +92,33 @@ symlink. Packages added interactively should also receive a manifest pin if they
 are intended for reproducible bootstrap. Existing local package files are not
 imported into Git.
 
+## Claude plugins
+
+`agents/claude/plugins.json` declares the Claude Code plugins to install:
+
+```json
+{
+  "marketplaces": { "pstack-claude": "michael-denyer/pstack-claude" },
+  "plugins": ["pstack@pstack-claude"]
+}
+```
+
+`marketplaces` maps a marketplace name to its GitHub `owner/repo` source. Every
+plugin id (`name@marketplace`) must use a declared marketplace, including the
+official one, and ids must be unique. A bad manifest fails before any link changes.
+
+The installer reads current state through `claude plugin marketplace list --json`
+and `claude plugin list --json`. It runs `claude plugin marketplace add <source>`
+for each missing marketplace, then `claude plugin install <id>` for each missing
+plugin, and afterwards checks that every declared plugin is listed. Claude
+writes its own machine-local settings; the installer never edits them.
+
+Plugins are never removed, disabled, or re-enabled. A declared plugin the user
+disabled locally counts as installed and stays disabled, and installed plugins
+or marketplaces missing from the manifest are left alone. Use `claude plugin
+uninstall` to drop one. `--links-only` skips this step, and so does a manifest
+that declares nothing; neither runs `claude`.
+
 ## Settings ownership
 
 Pi and OpenCode settings are linked to their respective files under `agents/`.
@@ -138,9 +165,9 @@ browser separately.
 ## Safety and repeatability
 
 ```sh
-./scripts/installation.sh --dry-run     # No writes or package installation
+./scripts/installation.sh --dry-run     # No writes or package/plugin installation
 ./scripts/installation.sh --check       # Exit 1 on drift/conflicts; otherwise 0
-./scripts/installation.sh --links-only  # Skip all package/dependency installation
+./scripts/installation.sh --links-only  # Skip all package, plugin, and dependency installation
 ```
 
 - Correct links are no-ops; additions are discovered automatically.
@@ -169,8 +196,8 @@ An installation lock prevents overlapping apply phases. After a crash, inspect
 The installer targets `~/.pi/agent`; an alternate `PI_CODING_AGENT_DIR` is rejected
 rather than installing packages into a different location from the links.
 
-Remember to commit and push new/moved skills, the installer, and package-list
-changes. Another machine only receives what is present in its checkout.
+Remember to commit and push new/moved skills, the installer, and package and
+plugin list changes. Another machine only receives what is present in its checkout.
 
 ## Tests
 
@@ -180,5 +207,6 @@ node --test scripts/install.test.mjs
 
 Tests use disposable homes/checkouts and fake package-manager commands. They cover
 repeat runs, additions, removals, conflicts, ownership, no local imports, platform
-layout, package pinning, dependency changes, and failure/retry behavior. They do
-not download third-party packages or substitute for native macOS smoke testing.
+layout, package pinning, Claude plugin reconciliation, dependency changes, and
+failure/retry behavior. They do not download third-party packages or plugins, and
+they do not substitute for native macOS smoke testing.

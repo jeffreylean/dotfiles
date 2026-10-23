@@ -35,6 +35,13 @@ function run(command, args, cwd, quiet = false) {
   return result.status === 0;
 }
 
+function capture(command, args, cwd) {
+  const result = spawnSync(command, args, { cwd, encoding: 'utf8' });
+  if (result.error) throw new Error(`Cannot run ${command}: ${result.error.message}`);
+  if (result.status !== 0) throw new Error(`${command} ${args.join(' ')} exited with ${result.status}: ${result.stderr.trim()}`);
+  return result.stdout;
+}
+
 // Read the checkout, never harvest installed skills from the current machine.
 function desiredLayout(root, home, config, platform) {
   const links = new Map();
@@ -131,6 +138,28 @@ function parsePackage(source) {
   return { source, name: match[1], version: match[2] };
 }
 
+function parseClaudePlugins(manifest) {
+  const { marketplaces, plugins } = manifest ?? {};
+  if (!marketplaces || typeof marketplaces !== 'object' || Array.isArray(marketplaces) || !Array.isArray(plugins)) {
+    throw new Error('agents/claude/plugins.json must be {"marketplaces": {name: "owner/repo"}, "plugins": ["name@marketplace"]}');
+  }
+  const sources = Object.entries(marketplaces).map(([name, source]) => {
+    if (!/^[\w.-]+$/.test(name) || typeof source !== 'string' || !/^[\w.-]+\/[\w.-]+$/.test(source)) {
+      throw new Error(`Invalid Claude marketplace ${JSON.stringify(name)}: expected a GitHub owner/repo source, got ${JSON.stringify(source)}`);
+    }
+    return { name, source };
+  });
+  const seen = new Set();
+  for (const id of plugins) {
+    const marketplace = typeof id === 'string' && id.match(/^[\w.-]+@([\w.-]+)$/)?.[1];
+    if (!marketplace) throw new Error(`Expected Claude plugin id like name@marketplace; got ${JSON.stringify(id)}`);
+    if (!Object.hasOwn(marketplaces, marketplace)) throw new Error(`Claude plugin ${id} uses undeclared marketplace ${marketplace}`);
+    if (seen.has(id)) throw new Error(`Duplicate Claude plugin: ${id}`);
+    seen.add(id);
+  }
+  return { marketplaces: sources, plugins };
+}
+
 function packageName(source) {
   return typeof source === 'string' ? source.match(/^npm:((?:@[^/\s]+\/)?[^@/\s]+)/)?.[1] : undefined;
 }
@@ -152,7 +181,7 @@ function declarationMatches(settings, pkg) {
 export function install({
   root, home, config = path.join(home, '.config'), stateHome = path.join(home, '.local/state'),
   platform = process.platform, dryRun = false, check = false, backup = false, linksOnly = false,
-  execute = run, log = console.log,
+  execute = run, capture: readOutput = capture, log = console.log,
 }) {
   if (!['linux', 'darwin'].includes(platform)) throw new Error('Only Linux and macOS are supported.');
   root = path.resolve(root);
@@ -239,6 +268,23 @@ export function install({
       conflicts.push(`Pi package ${pkg.name} has custom resource filters; reconcile its source/version manually before rerunning.`);
     }
   }
+  const nothing = { marketplaces: [], plugins: [] };
+  const claude = linksOnly ? nothing : parseClaudePlugins(readJSON(path.join(root, 'agents/claude/plugins.json')));
+  const missingClaude = () => {
+    if (!claude.marketplaces.length && !claude.plugins.length) return nothing;
+    const listed = (args, key) => {
+      const entries = JSON.parse(readOutput('claude', args, home));
+      if (!Array.isArray(entries)) throw new Error(`claude ${args.join(' ')} did not print a JSON array`);
+      return new Set(entries.map((entry) => entry[key]));
+    };
+    const marketplaces = listed(['plugin', 'marketplace', 'list', '--json'], 'name');
+    const plugins = listed(['plugin', 'list', '--json'], 'id');
+    return {
+      marketplaces: claude.marketplaces.filter(({ name }) => !marketplaces.has(name)),
+      plugins: claude.plugins.filter((id) => !plugins.has(id)),
+    };
+  };
+  const claudeChanges = missingClaude();
   const dependencyHealthy = (directory) => exists(path.join(directory, 'node_modules')) && execute(
     'npm', ['ls', '--omit=dev', '--omit=peer', '--all', '--json', '--logs-max=0', '--update-notifier=false'], directory, true,
   );
@@ -258,9 +304,11 @@ export function install({
 
   for (const action of actions) log(`${preview ? 'would ' : ''}${action.kind}: ${action.dst}${action.src ? ` -> ${action.src}` : ''}`);
   for (const pkg of packageChanges) log(`${preview ? 'would ' : ''}install Pi package: ${pkg.source}`);
+  for (const { name, source } of claudeChanges.marketplaces) log(`${preview ? 'would ' : ''}add Claude marketplace: ${name} (${source})`);
+  for (const id of claudeChanges.plugins) log(`${preview ? 'would ' : ''}install Claude plugin: ${id}`);
   for (const dep of dependencies) log(`${preview ? 'would ' : ''}install dependencies: ${dep.key}${dep.locked ? ' (npm ci)' : ' (no npm lockfile)'}`);
   if (conflicts.length) throw new Error([...new Set(conflicts)].join('\n'));
-  const changes = actions.length + packageChanges.length + dependencies.length;
+  const changes = actions.length + packageChanges.length + claudeChanges.marketplaces.length + claudeChanges.plugins.length + dependencies.length;
   if (preview) return { changes };
 
   fs.mkdirSync(stateDir, { recursive: true });
@@ -301,6 +349,16 @@ export function install({
         throw new Error(`Pi did not reconcile ${pkg.source}; inspect pi list and settings.json, then retry.`);
       }
     }
+    for (const { name, source } of claudeChanges.marketplaces) {
+      if (!execute('claude', ['plugin', 'marketplace', 'add', source], home)) throw new Error(`Claude marketplace add failed: ${name} (${source})`);
+    }
+    for (const id of claudeChanges.plugins) {
+      if (!execute('claude', ['plugin', 'install', id], home)) throw new Error(`Claude plugin installation failed: ${id}`);
+    }
+    if (claudeChanges.plugins.length) {
+      const missing = missingClaude().plugins;
+      if (missing.length) throw new Error(`Claude did not install ${missing.join(', ')}; inspect claude plugin list, then retry.`);
+    }
     for (const dep of dependencies) {
       const args = dep.locked
         ? ['ci', '--omit=dev', '--no-audit', '--no-fund']
@@ -326,16 +384,17 @@ function main() {
   if (flags.has('--help') || flags.has('-h')) {
     console.log(`Usage: scripts/installation.sh [--dry-run | --check] [--backup] [--links-only]
 
-Install repo-owned dotfiles, skills, Pi extensions, and declared npm dependencies.
-Requires Node.js 22+, npm, and Pi (unless --links-only).
+Install repo-owned dotfiles, skills, Pi extensions, declared npm dependencies,
+and declared Claude plugins.
+Requires Node.js 22+, npm, Pi, and Claude Code (unless --links-only).
 
   --dry-run     Show actions without installing or changing files.
   --check       Read-only drift check; exit 1 when changes are required.
   --backup      Move conflicting local paths to backups; never merge into Git.
-  --links-only  Skip Pi packages and npm dependencies.
+  --links-only  Skip Pi packages, Claude plugins, and npm dependencies.
 
 State: $XDG_STATE_HOME/dotfiles/installation.json (default ~/.local/state).
-Only repo-owned links are pruned. Unlisted local skills/packages stay untouched.
+Only repo-owned links are pruned. Unlisted local skills/packages/plugins stay untouched.
 No machine-local skills, credentials, or Omarchy integrations are imported.`);
     return;
   }

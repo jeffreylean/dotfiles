@@ -1,0 +1,10 @@
+{
+  "marketplaces": {
+    "claude-plugins-official": "anthropics/claude-plugins-official",
+    "pstack-claude": "michael-denyer/pstack-claude"
+  },
+  "plugins": [
+    "cloudflare@claude-plugins-official",
+    "pstack@pstack-claude"
+  ]
+}
