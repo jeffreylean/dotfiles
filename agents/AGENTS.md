@@ -16,3 +16,6 @@ When working in any of the following languages, refer to the corresponding rules
 
 ## Cloudflare
 - When interacting with Cloudflare, use the cf CLI unless the project has a Wrangler configuration file.
+
+## pstack
+@~/.claude/pstack-models.md
