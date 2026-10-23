@@ -114,6 +114,15 @@ test('new skill and extension additions are discovered without editing a manifes
   assert.equal(f.apply().changes, 0);
 });
 
+test('Matt Pocock skills stay shared but are not linked for Claude, which uses the plugin', (t) => {
+  const f = fixture(t);
+  f.write('agents/skills/matt-skills/tdd/SKILL.md');
+  f.apply();
+  assert.ok(fs.existsSync(path.join(f.home, '.agents/skills/matt-skills/tdd/SKILL.md')));
+  assert.equal(fs.existsSync(path.join(f.home, '.claude/skills/tdd')), false);
+  assert.ok(fs.existsSync(path.join(f.home, '.claude/skills/common')));
+});
+
 test('removed and renamed managed skills and extensions are pruned', (t) => {
   const f = fixture(t);
   f.apply();

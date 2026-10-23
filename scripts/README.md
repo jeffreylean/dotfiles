@@ -42,15 +42,17 @@ Claude settings stay machine-local. The repo contains an Atuin hook template.
 | `agents/claude/settings.json` | Atuin hook template for local `~/.claude/settings.json` (not linked) |
 | `agents/opencode/opencode.json` | `$XDG_CONFIG_HOME/opencode/opencode.json` |
 | `agents/skills/` | `~/.agents/skills` (whole-directory link) |
-| Shared skills plus `agents/claude/skills/` | Individual links in `~/.claude/skills/` |
+| Shared skills (except `matt-skills/`) plus `agents/claude/skills/` | Individual links in `~/.claude/skills/` |
 | `agents/opencode/skills/` | Individual links in `$XDG_CONFIG_HOME/opencode/skills/` |
 | `agents/pi/pi-skills/` | Individual links in `~/.pi/agent/skills/` |
 | `agents/pi/extensions/` | Individual links in `~/.pi/agent/extensions/` |
 | `agents/pi/extensions/*/skills/` | Individual links in `~/.pi/agent/skills/` |
 
 Pi and OpenCode discover the shared root directly. Claude gets explicit shared
-skill links. OpenCode also supports Claude-compatible discovery locations, so a
-Claude directory is not an isolation guarantee.
+skill links, except `agents/skills/matt-skills/`: Claude loads those from the
+`mattpocock-skills@claude-plugins-official` plugin instead. OpenCode also
+supports Claude-compatible discovery locations, so a Claude directory is not an
+isolation guarantee.
 
 Add a skill with a `SKILL.md` in the appropriate source directory; no install list
 needs updating. Shared skills immediately appear through the shared root; rerun

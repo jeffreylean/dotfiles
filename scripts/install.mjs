@@ -62,7 +62,7 @@ function desiredLayout(root, home, config, platform) {
     registerMixed(dst, directory);
     for (const name of entries(directory)) link(`${relative}/${name}`, path.join(dst, name));
   };
-  const skills = (relative, dst) => {
+  const skills = (relative, dst, exclude = []) => {
     const directory = source(relative);
     registerMixed(dst, directory);
     const visit = (dir) => {
@@ -76,6 +76,7 @@ function desiredLayout(root, home, config, platform) {
       for (const name of entries(dir)) {
         if (name === 'node_modules') continue;
         const child = path.join(dir, name);
+        if (exclude.includes(path.relative(directory, child))) continue;
         // Only follow a symlink when it names a skill, not an arbitrary directory tree.
         if (stat(child)?.isSymbolicLink()) {
           if (exists(path.join(child, 'SKILL.md'))) visit(child);
@@ -111,7 +112,8 @@ function desiredLayout(root, home, config, platform) {
   // Claude settings stay machine-local; the Atuin hook file is a merge template.
   link('agents/commands', path.join(home, '.claude/commands'));
   link('agents/claude/rules', path.join(home, '.claude/rules'));
-  skills('agents/skills', path.join(home, '.claude/skills'));
+  // Claude gets these from the mattpocock-skills plugin instead.
+  skills('agents/skills', path.join(home, '.claude/skills'), ['matt-skills']);
   skills('agents/claude/skills', path.join(home, '.claude/skills'));
   link('agents/AGENTS.md', path.join(config, 'opencode/AGENTS.md'));
   link('agents/commands', path.join(config, 'opencode/command'));
