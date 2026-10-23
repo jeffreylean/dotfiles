@@ -1,0 +1,7 @@
+{
+  "name": "grind-mode",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Chief/worker orchestration of pi agents through herdr and pi-intercom, with handoff-based context rotation"
+}

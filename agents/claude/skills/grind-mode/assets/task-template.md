@@ -1,0 +1,1 @@
+../../../../pi/pi-skills/grind-mode/assets/task-template.md

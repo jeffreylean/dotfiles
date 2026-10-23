@@ -1,0 +1,18 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "node ~/.claude/skills/grind-mode/hooks/context-limit.mjs statusline"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ~/.claude/skills/grind-mode/hooks/context-limit.mjs hook"
+          }
+        ]
+      }
+    ]
+  }
+}
