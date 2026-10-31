@@ -21,7 +21,7 @@ There is no wrapper script. Each piece is a native command:
 | Hear back, answer questions | `SendMessage` between local sessions. `claude --name <name>` makes the session name the worker's address. A message to an idle session starts a new turn there. |
 | Notice a worker that stops silently | `SendMessage` with `notify_when_idle: true`: one notice when it next goes idle or exits |
 | Notice a worker stopped at a dialog | `herdr agent wait <name> --until blocked` as a background Bash command; its exit wakes the chief |
-| Let it read the brief and write handoffs | `claude --add-dir "$RUN" "$HOME/.agents/skills/handoff"`: everything outside its working directories asks first, even in auto mode |
+| Let it read the brief and write handoffs | `claude --add-dir "$RUN" "$HOME/.claude/skills/handoff"`: everything outside its working directories asks first, even in auto mode |
 | See its state | `herdr agent list`: `.agent_status` (working, idle, blocked, missing) and `.tokens.context` (from the worker's status line) |
 | Fresh session | `herdr agent prompt <name> "/clear"`: a new conversation in the same process |
 | Worker-only config | `claude --settings "$RUN/worker-settings.json"`: merged over the user's settings, so herdr's own SessionStart hook still runs |

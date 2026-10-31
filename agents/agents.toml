@@ -22,12 +22,12 @@ to = ["pi"]
 from = "opencode/skills/*"
 to = ["opencode"]
 
-[[skills]]                   # Claude gets the rest from the mattpocock-skills plugin
+[[skills]]
 from = "library/matt-skills/*"
 to = ["codex", "opencode"]
 
 [[skills]]
-from = "library/matt-skills/{grill-with-docs,grilling,domain-modeling}"
+from = "library/matt-skills/{grill-with-docs,grilling,domain-modeling,handoff}"
 to = ["claude", "pi"]
 
 [claude]
@@ -40,8 +40,16 @@ instructions = "claude/CLAUDE.md"   # must contain the line @~/.agents/AGENTS.md
 "pstack-models.md" = "claude/pstack-models.md"
 
 [claude.plugins]
-marketplaces = { claude-plugins-official = "anthropics/claude-plugins-official", pstack-claude = "michael-denyer/pstack-claude" }
-install = ["cloudflare@claude-plugins-official", "pstack@pstack-claude"]
+marketplaces = { claude-plugins-official = "anthropics/claude-plugins-official", cloudflare = "cloudflare/skills", plannotator = "backnotprop/plannotator", pstack-claude = "michael-denyer/pstack-claude" }
+install = [
+  "cloudflare@cloudflare",
+  "plannotator@plannotator",
+  "pstack@pstack-claude",
+  "lua-lsp@claude-plugins-official",
+  "pyright-lsp@claude-plugins-official",
+  "rust-analyzer-lsp@claude-plugins-official",
+  "typescript-lsp@claude-plugins-official",
+]
 
 [pi]
 instructions = "pi/APPEND_SYSTEM.md"  # Pi's own additions to its system prompt

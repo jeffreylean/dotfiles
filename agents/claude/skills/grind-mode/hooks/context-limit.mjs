@@ -57,7 +57,7 @@ function hook() {
   const additionalContext = [
     `[grind] Your context is at ${percent}%, past the ${limit}% limit.`,
     'Finish only the step you are in and leave the files consistent.',
-    'Then write a handoff following ~/.agents/skills/handoff/SKILL.md into the handoffs folder your task message names,',
+    'Then write a handoff following ~/.claude/skills/handoff/SKILL.md into the handoffs folder your task message names,',
     'send the chief its path with SendMessage, and end your turn.',
     'Do not say the task is finished unless it is. The chief will give you a fresh session to continue from the handoff.',
   ].join(' ')

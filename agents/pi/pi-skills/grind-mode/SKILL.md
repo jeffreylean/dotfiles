@@ -139,7 +139,7 @@ Start the worker in that pane. When it is done, merge `git merge --no-ff grind/<
 
 ## Your own context
 
-Read workers' messages, not their transcripts. When your context passes about 60%, write a chief handoff following `~/.agents/skills/handoff/SKILL.md` with the run dir, `workers.md` and what is pending. Tell the user to start a new session in this pane and say "resume grind run <dir>". The new chief has a new intercom address: tell every worker with `intercom send`.
+Read workers' messages, not their transcripts. When your context passes about 60%, write a chief handoff following `~/.pi/agent/skills/handoff/SKILL.md` with the run dir, `workers.md` and what is pending. Tell the user to start a new session in this pane and say "resume grind run <dir>". The new chief has a new intercom address: tell every worker with `intercom send`.
 
 ## Output
 

@@ -62,7 +62,7 @@ herdr pane split <worker-pane> --direction right --cwd "$PWD" --no-focus        
 
 herdr agent start g-api --kind claude --pane <pane> -- \
   --name g-api --model claude-opus-5-5 --effort high --permission-mode auto \
-  --add-dir "$RUN" "$HOME/.agents/skills/handoff" \
+  --add-dir "$RUN" "$HOME/.claude/skills/handoff" \
   --settings "$RUN/worker-settings.json" \
   --append-system-prompt-file "$SKILL/references/worker-protocol.md"
 ```
@@ -154,7 +154,7 @@ Start the worker in that pane. When it is done, merge `git merge --no-ff grind/<
 
 ## Your own context
 
-Read workers' messages, not their transcripts. When your context gets heavy (about 60%), write a chief handoff following `~/.agents/skills/handoff/SKILL.md` with the run dir, `workers.md` and what is pending. Tell the user to start a new session in this pane and say "resume grind run <dir>". The new chief has a new name: tell every worker with `SendMessage`.
+Read workers' messages, not their transcripts. When your context gets heavy (about 60%), write a chief handoff following `~/.claude/skills/handoff/SKILL.md` with the run dir, `workers.md` and what is pending. Tell the user to start a new session in this pane and say "resume grind run <dir>". The new chief has a new name: tell every worker with `SendMessage`.
 
 ## Output
 

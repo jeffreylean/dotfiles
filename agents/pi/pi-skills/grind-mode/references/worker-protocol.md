@@ -25,7 +25,7 @@ Use the intercom tool with the chief's address.
 A `[grind]` message tells you when your context passes the limit. Then:
 
 1. Finish only the step you are in, and leave the files consistent.
-2. Write a handoff following `~/.agents/skills/handoff/SKILL.md` into the handoffs folder, under a name no earlier handoff there uses.
+2. Write a handoff following `~/.pi/agent/skills/handoff/SKILL.md` into the handoffs folder, under a name no earlier handoff there uses.
 3. Send the chief its path, and end your turn. Do not say the task is finished unless it is.
 
 The chief restarts you in a fresh session. Its first message names the handoff: read it, re-read the brief, check `git status` and `git diff`, and continue. Report the same way.
