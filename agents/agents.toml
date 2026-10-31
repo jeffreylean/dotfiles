@@ -1,0 +1,77 @@
+version = 1
+
+[shared]
+skills = "skills"            # whole-dir link to ~/.agents/skills; every agent sees every skill in it
+instructions = "AGENTS.md"   # ~/.agents/AGENTS.md, the target of every include
+
+# Skills outside the shared tier. A pattern segment is a literal, `*`, or {a,b}.
+# Every match must be a directory holding SKILL.md. Routes add up; none subtract.
+[[skills]]
+from = "claude/skills/*"
+to = ["claude"]
+
+[[skills]]
+from = "pi/pi-skills/*"
+to = ["pi"]
+
+[[skills]]
+from = "pi/extensions/*/skills/*"
+to = ["pi"]
+
+[[skills]]
+from = "opencode/skills/*"
+to = ["opencode"]
+
+[[skills]]                   # Claude gets the rest from the mattpocock-skills plugin
+from = "library/matt-skills/*"
+to = ["codex", "opencode"]
+
+[[skills]]
+from = "library/matt-skills/{grill-with-docs,grilling,domain-modeling}"
+to = ["claude", "pi"]
+
+[claude]
+instructions = "claude/CLAUDE.md"   # must contain the line @~/.agents/AGENTS.md
+
+[claude.links]
+"commands" = "commands"
+"rules" = "claude/rules"
+"agents" = "claude/agents"
+"pstack-models.md" = "claude/pstack-models.md"
+
+[claude.plugins]
+marketplaces = { claude-plugins-official = "anthropics/claude-plugins-official", pstack-claude = "michael-denyer/pstack-claude" }
+install = ["cloudflare@claude-plugins-official", "pstack@pstack-claude"]
+
+[pi]
+instructions = "pi/APPEND_SYSTEM.md"  # Pi's own additions to its system prompt
+# Pi packages are listed once, in pi/settings.json `packages`.
+
+[pi.links]
+"AGENTS.md" = "AGENTS.md"           # the shared prompt, which Pi loads in every project
+"settings.json" = "pi/settings.json"
+"context.md" = "pi/context.md"
+"keybindings.json" = "pi/keybindings.json"
+"agents" = "pi/agents"
+"pstack-models.md" = "pi/pstack-models.md"
+"extensions/*" = "pi/extensions/*"  # one link per child, so local files beside them stay
+
+[codex]
+instructions = "codex/AGENTS.md"    # generated into ~/.codex/AGENTS.md with @~/ lines expanded
+
+[opencode]
+instructions = "opencode/AGENTS.md" # the shared prompt comes from opencode.json "instructions"
+
+[opencode.links]
+"opencode.json" = "opencode/opencode.json"
+"command" = "commands"
+"agents" = "opencode/subagents"
+
+# Per machine, keyed by the name `agents status` prints.
+# An override can narrow the agent set and add routes. It cannot drop a route or a link.
+[machine.omarchy]
+agents = ["claude", "pi", "codex"]
+
+[[machine.omarchy.skills]]
+from = "library/matt-skills/{to-prd,to-tickets}"
+to = ["pi"]

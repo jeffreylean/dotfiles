@@ -1,8 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
-import { createHash } from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const exists = (file) => fs.existsSync(file);
@@ -29,166 +27,31 @@ function realLocation(file) {
   return path.join(fs.realpathSync(parent), ...tail);
 }
 
-function run(command, args, cwd, quiet = false) {
-  const result = spawnSync(command, args, { cwd, encoding: 'utf8', stdio: quiet ? 'pipe' : 'inherit' });
-  if (result.error) throw new Error(`Cannot run ${command}: ${result.error.message}`);
-  return result.status === 0;
-}
-
-function capture(command, args, cwd) {
-  const result = spawnSync(command, args, { cwd, encoding: 'utf8' });
-  if (result.error) throw new Error(`Cannot run ${command}: ${result.error.message}`);
-  if (result.status !== 0) throw new Error(`${command} ${args.join(' ')} exited with ${result.status}: ${result.stderr.trim()}`);
-  return result.stdout;
-}
-
-// Read the checkout, never harvest installed skills from the current machine.
+// Read the checkout, never harvest config from the current machine.
 function desiredLayout(root, home, config, platform) {
   const links = new Map();
-  const packageRoots = new Set();
-  const mixed = new Map();
-  const registerMixed = (dst, src) => mixed.set(dst, [...(mixed.get(dst) ?? []), src]);
-  const source = (relative) => {
+  const link = (relative, dst) => {
     const file = path.join(root, relative);
     if (!exists(file)) throw new Error(`Missing source: ${file}`);
     if (!inside(fs.realpathSync(file), fs.realpathSync(root))) {
       throw new Error(`Source escapes the dotfiles checkout: ${file}`);
     }
-    return file;
-  };
-  const add = (src, dst) => {
-    const previous = links.get(dst);
-    if (previous && fs.realpathSync(previous) !== fs.realpathSync(src)) {
-      throw new Error(`Duplicate destination: ${dst}\n  ${previous}\n  ${src}`);
-    }
-    links.set(dst, src);
-  };
-  const link = (relative, dst) => add(source(relative), dst);
-  const children = (relative, dst) => {
-    const directory = source(relative);
-    registerMixed(dst, directory);
-    for (const name of entries(directory)) link(`${relative}/${name}`, path.join(dst, name));
-  };
-  const skills = (relative, dst, exclude = []) => {
-    const directory = source(relative);
-    registerMixed(dst, directory);
-    const visit = (dir) => {
-      if (exists(path.join(dir, 'SKILL.md'))) {
-        // Also validates relative symlinks committed within the checkout.
-        source(path.relative(root, dir));
-        packageRoots.add(dir);
-        add(dir, path.join(dst, path.basename(dir)));
-        return;
-      }
-      for (const name of entries(dir)) {
-        if (name === 'node_modules') continue;
-        const child = path.join(dir, name);
-        if (exclude.includes(path.relative(directory, child))) continue;
-        // Only follow a symlink when it names a skill, not an arbitrary directory tree.
-        if (stat(child)?.isSymbolicLink()) {
-          if (exists(path.join(child, 'SKILL.md'))) visit(child);
-        } else if (stat(child)?.isDirectory()) visit(child);
-      }
-    };
-    visit(directory);
+    links.set(dst, file);
   };
 
   link('nvim', path.join(config, 'nvim'));
   link('ghostty', path.join(config, 'ghostty'));
-  children('tmux', platform === 'darwin' ? path.join(home, '.tmux') : path.join(config, 'tmux'));
+  const tmux = platform === 'darwin' ? path.join(home, '.tmux') : path.join(config, 'tmux');
+  for (const name of entries(path.join(root, 'tmux'))) link(`tmux/${name}`, path.join(tmux, name));
   for (const relative of ['herdr/config.toml', 'zed/settings.json', 'zed/keymap.json']) {
     link(relative, path.join(config, relative));
   }
-
-  link('agents/skills', path.join(home, '.agents/skills'));
-  const pi = path.join(home, '.pi/agent');
-  for (const name of ['AGENTS.md', 'SYSTEM.md', 'context.md', 'settings.json', 'keybindings.json', 'agents']) {
-    link(`agents/pi/${name}`, path.join(pi, name));
-  }
-  if (exists(path.join(root, 'agents/pi/prompts'))) link('agents/pi/prompts', path.join(pi, 'prompts'));
-  children('agents/pi/extensions', path.join(pi, 'extensions'));
-  skills('agents/pi/pi-skills', path.join(pi, 'skills'));
-  for (const name of entries(path.join(root, 'agents/pi/extensions'))) {
-    const relative = `agents/pi/extensions/${name}`;
-    if (!fs.statSync(source(relative)).isDirectory()) continue;
-    packageRoots.add(source(relative));
-    if (exists(path.join(root, relative, 'skills'))) skills(`${relative}/skills`, path.join(pi, 'skills'));
-  }
-
-  link('agents/pstack-models.md', path.join(pi, 'pstack-models.md'));
-
-  link('agents/AGENTS.md', path.join(home, '.claude/CLAUDE.md'));
-  link('agents/pstack-models.md', path.join(home, '.claude/pstack-models.md'));
-  // Claude settings stay machine-local; the Atuin hook file is a merge template.
-  link('agents/commands', path.join(home, '.claude/commands'));
-  link('agents/claude/rules', path.join(home, '.claude/rules'));
-  // Claude gets these from the mattpocock-skills plugin instead, except
-  // grill-with-docs and the skills it calls.
-  skills('agents/skills', path.join(home, '.claude/skills'), ['matt-skills']);
-  for (const name of ['grill-with-docs', 'grilling', 'domain-modeling']) {
-    skills(`agents/skills/matt-skills/${name}`, path.join(home, '.claude/skills'));
-  }
-  skills('agents/claude/skills', path.join(home, '.claude/skills'));
-  link('agents/AGENTS.md', path.join(config, 'opencode/AGENTS.md'));
-  link('agents/commands', path.join(config, 'opencode/command'));
-  link('agents/opencode/opencode.json', path.join(config, 'opencode/opencode.json'));
-  link('agents/opencode/subagents', path.join(config, 'opencode/agents'));
-  skills('agents/opencode/skills', path.join(config, 'opencode/skills'));
-  link('agents/AGENTS.md', path.join(home, '.codex/AGENTS.md'));
-  // No Omarchy or other machine-local discovery. Only sources above are deployed.
-  return { links, packageRoots, mixed };
-}
-
-function parsePackage(source) {
-  const match = typeof source === 'string' && source.match(/^npm:((?:@[^/\s]+\/)?[^@/\s]+)@(\d+\.\d+\.\d+(?:-[\w.-]+)?(?:\+[\w.-]+)?)$/);
-  if (!match) throw new Error(`Expected pinned npm package, e.g. npm:pi-example@1.2.3; got ${JSON.stringify(source)}`);
-  return { source, name: match[1], version: match[2] };
-}
-
-function parseClaudePlugins(manifest) {
-  const { marketplaces, plugins } = manifest ?? {};
-  if (!marketplaces || typeof marketplaces !== 'object' || Array.isArray(marketplaces) || !Array.isArray(plugins)) {
-    throw new Error('agents/claude/plugins.json must be {"marketplaces": {name: "owner/repo"}, "plugins": ["name@marketplace"]}');
-  }
-  const sources = Object.entries(marketplaces).map(([name, source]) => {
-    if (!/^[\w.-]+$/.test(name) || typeof source !== 'string' || !/^[\w.-]+\/[\w.-]+$/.test(source)) {
-      throw new Error(`Invalid Claude marketplace ${JSON.stringify(name)}: expected a GitHub owner/repo source, got ${JSON.stringify(source)}`);
-    }
-    return { name, source };
-  });
-  const seen = new Set();
-  for (const id of plugins) {
-    const marketplace = typeof id === 'string' && id.match(/^[\w.-]+@([\w.-]+)$/)?.[1];
-    if (!marketplace) throw new Error(`Expected Claude plugin id like name@marketplace; got ${JSON.stringify(id)}`);
-    if (!Object.hasOwn(marketplaces, marketplace)) throw new Error(`Claude plugin ${id} uses undeclared marketplace ${marketplace}`);
-    if (seen.has(id)) throw new Error(`Duplicate Claude plugin: ${id}`);
-    seen.add(id);
-  }
-  return { marketplaces: sources, plugins };
-}
-
-function packageName(source) {
-  return typeof source === 'string' ? source.match(/^npm:((?:@[^/\s]+\/)?[^@/\s]+)/)?.[1] : undefined;
-}
-
-function configuredSources(settings, name) {
-  return (settings.packages ?? []).filter((entry) => packageName(typeof entry === 'string' ? entry : entry.source) === name);
-}
-
-function packageInstalled(pi, pkg) {
-  const file = path.join(pi, 'npm/node_modules', pkg.name, 'package.json');
-  return exists(file) && readJSON(file).version === pkg.version;
-}
-
-function declarationMatches(settings, pkg) {
-  const entries = configuredSources(settings, pkg.name);
-  return entries.length === 1 && (typeof entries[0] === 'string' ? entries[0] : entries[0].source) === pkg.source;
+  return links;
 }
 
 export function install({
   root, home, config = path.join(home, '.config'), stateHome = path.join(home, '.local/state'),
-  platform = process.platform, dryRun = false, check = false, backup = false, linksOnly = false,
-  execute = run, capture: readOutput = capture, log = console.log,
+  platform = process.platform, dryRun = false, check = false, backup = false, log = console.log,
 }) {
   if (!['linux', 'darwin'].includes(platform)) throw new Error('Only Linux and macOS are supported.');
   root = path.resolve(root);
@@ -204,29 +67,18 @@ export function install({
   const stateFile = path.join(stateDir, 'installation.json');
   const state = exists(stateFile) ? readJSON(stateFile) : { version: 1, links: {}, dependencies: {} };
   if (state.version !== 1 || !state.links || !state.dependencies) throw new Error(`Invalid state file: ${stateFile}`);
-  const { links, packageRoots, mixed } = desiredLayout(root, home, config, platform);
-  const previous = { ...state.links };
+  // The agents CLI now owns everything under agents/. Forget those entries
+  // instead of pruning them, so its links are never removed or reported here.
+  const agents = path.join(root, 'agents');
+  state.links = Object.fromEntries(Object.entries(state.links)
+    .filter(([dst, raw]) => !inside(path.resolve(path.dirname(dst), raw), agents)));
+  state.dependencies = Object.fromEntries(Object.entries(state.dependencies)
+    .filter(([key]) => !inside(path.resolve(root, key), agents)));
+  const links = desiredLayout(root, home, config, platform);
+  const previous = state.links;
   const actions = [];
   const conflicts = [];
   const addAction = (kind, dst, src) => actions.push({ kind, dst, src });
-
-  // Adopt only recognizable repo links from the older setup script, never local content.
-  const legacyRoots = new Map(mixed);
-  for (const dir of [path.join(home, '.pi/agent/skills'), path.join(config, 'opencode/skills'), path.join(home, '.codex/skills')]) {
-    legacyRoots.set(dir, [...(legacyRoots.get(dir) ?? []), path.join(root, 'agents/skills')]);
-  }
-  for (const [dir, sources] of legacyRoots) {
-    if (!stat(dir)?.isDirectory()) continue;
-    for (const name of entries(dir)) {
-      const dst = path.join(dir, name);
-      const raw = target(dst);
-      if (!raw) continue;
-      const absolute = path.resolve(dir, raw);
-      if (sources.some((src) => inside(absolute, src)) && path.basename(absolute) === name) {
-        previous[dst] ??= raw;
-      }
-    }
-  }
 
   // Do not follow directory symlinks and accidentally modify a checkout or foreign tree.
   for (const dst of new Set([...links.keys(), ...Object.keys(previous)])) {
@@ -256,66 +108,9 @@ export function install({
     else conflicts.push(`Previously managed link was replaced locally; leaving untouched: ${dst}`);
   }
 
-  // Validate manifests before making any changes, including link changes.
-  const packages = linksOnly ? [] : readJSON(path.join(root, 'agents/pi/packages.json')).packages.map(parsePackage);
-  if (new Set(packages.map((pkg) => pkg.name)).size !== packages.length) throw new Error('Duplicate package names in agents/pi/packages.json');
-  const pi = path.join(home, '.pi/agent');
-  const settingsPath = path.join(pi, 'settings.json');
-  // Preflight the settings that will actually be linked, not local settings that
-  // may be moved to a backup. The repo settings are now intentionally writable
-  // through their symlink; credentials and package storage remain machine-local.
-  const settings = readJSON(links.get(settingsPath));
-  const packageChanges = packages.filter((pkg) => !declarationMatches(settings, pkg) || !packageInstalled(pi, pkg));
-  if (packageChanges.length && inside(realLocation(path.join(pi, 'npm')), fs.realpathSync(root))) {
-    conflicts.push('Pi npm resolves into the checkout; keep package storage machine-local.');
-  }
-  // Preserve resource filters: don't let a CLI pin change silently broaden package permissions.
-  for (const pkg of packageChanges) {
-    if (configuredSources(settings, pkg.name).some((entry) => typeof entry !== 'string')) {
-      conflicts.push(`Pi package ${pkg.name} has custom resource filters; reconcile its source/version manually before rerunning.`);
-    }
-  }
-  const nothing = { marketplaces: [], plugins: [] };
-  const claude = linksOnly ? nothing : parseClaudePlugins(readJSON(path.join(root, 'agents/claude/plugins.json')));
-  const missingClaude = () => {
-    if (!claude.marketplaces.length && !claude.plugins.length) return nothing;
-    const listed = (args, key) => {
-      const entries = JSON.parse(readOutput('claude', args, home));
-      if (!Array.isArray(entries)) throw new Error(`claude ${args.join(' ')} did not print a JSON array`);
-      return new Set(entries.map((entry) => entry[key]));
-    };
-    const marketplaces = listed(['plugin', 'marketplace', 'list', '--json'], 'name');
-    const plugins = listed(['plugin', 'list', '--json'], 'id');
-    return {
-      marketplaces: claude.marketplaces.filter(({ name }) => !marketplaces.has(name)),
-      plugins: claude.plugins.filter((id) => !plugins.has(id)),
-    };
-  };
-  const claudeChanges = missingClaude();
-  const dependencyHealthy = (directory) => exists(path.join(directory, 'node_modules')) && execute(
-    'npm', ['ls', '--omit=dev', '--omit=peer', '--all', '--json', '--logs-max=0', '--update-notifier=false'], directory, true,
-  );
-  const dependencies = [];
-  if (!linksOnly) for (const directory of [...packageRoots].sort()) {
-    const manifest = path.join(directory, 'package.json');
-    if (!exists(manifest) || !Object.keys(readJSON(manifest).dependencies ?? {}).length) continue;
-    const lock = path.join(directory, 'package-lock.json');
-    const hash = createHash('sha256').update(fs.readFileSync(manifest));
-    if (exists(lock)) hash.update(fs.readFileSync(lock));
-    const fingerprint = hash.update(`${platform}/${process.arch}/${process.versions.node.split('.')[0]}`).digest('hex');
-    const key = path.relative(root, directory);
-    if (state.dependencies[key] !== fingerprint || !dependencyHealthy(directory)) {
-      dependencies.push({ directory, fingerprint, key, locked: exists(lock) });
-    }
-  }
-
   for (const action of actions) log(`${preview ? 'would ' : ''}${action.kind}: ${action.dst}${action.src ? ` -> ${action.src}` : ''}`);
-  for (const pkg of packageChanges) log(`${preview ? 'would ' : ''}install Pi package: ${pkg.source}`);
-  for (const { name, source } of claudeChanges.marketplaces) log(`${preview ? 'would ' : ''}add Claude marketplace: ${name} (${source})`);
-  for (const id of claudeChanges.plugins) log(`${preview ? 'would ' : ''}install Claude plugin: ${id}`);
-  for (const dep of dependencies) log(`${preview ? 'would ' : ''}install dependencies: ${dep.key}${dep.locked ? ' (npm ci)' : ' (no npm lockfile)'}`);
   if (conflicts.length) throw new Error([...new Set(conflicts)].join('\n'));
-  const changes = actions.length + packageChanges.length + claudeChanges.marketplaces.length + claudeChanges.plugins.length + dependencies.length;
+  const changes = actions.length;
   if (preview) return { changes };
 
   fs.mkdirSync(stateDir, { recursive: true });
@@ -324,19 +119,12 @@ export function install({
     if (error.code === 'EEXIST') throw new Error(`Another installation may be running. If a previous run crashed, inspect and remove ${lockDir}`);
     throw error;
   }
-  const save = () => {
-    const contents = JSON.stringify(state, null, 2) + '\n';
-    if (exists(stateFile) && fs.readFileSync(stateFile, 'utf8') === contents) return;
-    const temporary = `${stateFile}.${process.pid}.tmp`;
-    fs.writeFileSync(temporary, contents, { mode: 0o600 });
-    fs.renameSync(temporary, stateFile);
-  };
   try {
     for (const { kind, dst, src } of actions) {
       fs.mkdirSync(path.dirname(dst), { recursive: true });
       if (kind === 'backup-link') {
-        // Keep backups outside harness discovery roots, so a backed-up SKILL.md
-        // cannot remain active as a second/conflicting skill.
+        // Keep backups outside the config roots, so a backed-up file is never
+        // picked up as live config.
         let saved = path.join(stateDir, 'backups', String(Date.now()), dst.slice(path.parse(dst).root.length));
         while (stat(saved)) saved += '.1';
         fs.mkdirSync(path.dirname(saved), { recursive: true });
@@ -349,33 +137,11 @@ export function install({
       if (kind !== 'remove') fs.symlinkSync(src, dst);
     }
     state.links = Object.fromEntries([...links].map(([dst]) => [dst, target(dst)]));
-    save(); // Keep ownership even if a subsequent package install fails.
-    for (const pkg of packageChanges) {
-      if (!execute('pi', ['install', pkg.source], home)) throw new Error(`Pi installation failed: ${pkg.source}`);
-      if (!exists(settingsPath) || !declarationMatches(readJSON(settingsPath), pkg) || !packageInstalled(pi, pkg)) {
-        throw new Error(`Pi did not reconcile ${pkg.source}; inspect pi list and settings.json, then retry.`);
-      }
-    }
-    for (const { name, source } of claudeChanges.marketplaces) {
-      if (!execute('claude', ['plugin', 'marketplace', 'add', source], home)) throw new Error(`Claude marketplace add failed: ${name} (${source})`);
-    }
-    for (const id of claudeChanges.plugins) {
-      if (!execute('claude', ['plugin', 'install', id], home)) throw new Error(`Claude plugin installation failed: ${id}`);
-    }
-    if (claudeChanges.plugins.length) {
-      const missing = missingClaude().plugins;
-      if (missing.length) throw new Error(`Claude did not install ${missing.join(', ')}; inspect claude plugin list, then retry.`);
-    }
-    for (const dep of dependencies) {
-      const args = dep.locked
-        ? ['ci', '--omit=dev', '--no-audit', '--no-fund']
-        : ['install', '--omit=dev', '--legacy-peer-deps', '--no-save', '--package-lock=false', '--no-audit', '--no-fund'];
-      if (!execute('npm', args, dep.directory)) throw new Error(`Dependency installation failed: ${dep.key}`);
-      if (!dependencyHealthy(dep.directory)) {
-        throw new Error(`Dependency verification failed: ${dep.key}`);
-      }
-      state.dependencies[dep.key] = dep.fingerprint;
-      save();
+    const contents = JSON.stringify(state, null, 2) + '\n';
+    if (!exists(stateFile) || fs.readFileSync(stateFile, 'utf8') !== contents) {
+      const temporary = `${stateFile}.${process.pid}.tmp`;
+      fs.writeFileSync(temporary, contents, { mode: 0o600 });
+      fs.renameSync(temporary, stateFile);
     }
     log(changes ? 'Installation complete.' : 'Already up to date.');
     return { changes };
@@ -386,36 +152,30 @@ export function install({
 
 function main() {
   const flags = new Set(process.argv.slice(2));
-  const known = ['--help', '-h', '--dry-run', '--check', '--backup', '--links-only'];
+  const known = ['--help', '-h', '--dry-run', '--check', '--backup'];
   for (const flag of flags) if (!known.includes(flag)) throw new Error(`Unknown option: ${flag}`);
   if (flags.has('--help') || flags.has('-h')) {
-    console.log(`Usage: scripts/installation.sh [--dry-run | --check] [--backup] [--links-only]
+    console.log(`Usage: scripts/installation.sh [--dry-run | --check] [--backup]
 
-Install repo-owned dotfiles, skills, Pi extensions, declared npm dependencies,
-and declared Claude plugins.
-Requires Node.js 22+, npm, Pi, and Claude Code (unless --links-only).
+Link repo-owned dotfiles: nvim, ghostty, tmux, herdr and zed.
+Agent config under agents/ is installed by the agents CLI (agents sync).
+Requires Node.js 22+.
 
-  --dry-run     Show actions without installing or changing files.
+  --dry-run     Show actions without changing files.
   --check       Read-only drift check; exit 1 when changes are required.
   --backup      Move conflicting local paths to backups; never merge into Git.
-  --links-only  Skip Pi packages, Claude plugins, and npm dependencies.
 
 State: $XDG_STATE_HOME/dotfiles/installation.json (default ~/.local/state).
-Only repo-owned links are pruned. Unlisted local skills/packages/plugins stay untouched.
-No machine-local skills, credentials, or Omarchy integrations are imported.`);
+Only repo-owned links are pruned. Entries pointing under agents/ are released, not pruned.`);
     return;
   }
   if (Number(process.versions.node.split('.')[0]) < 22) throw new Error('Node.js 22+ is required.');
   const home = process.env.HOME || os.homedir();
-  if (process.env.PI_CODING_AGENT_DIR && path.resolve(process.env.PI_CODING_AGENT_DIR) !== path.join(home, '.pi/agent')) {
-    throw new Error('Unset PI_CODING_AGENT_DIR: this installer targets ~/.pi/agent.');
-  }
   const result = install({
     root: path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), home,
     config: process.env.XDG_CONFIG_HOME || path.join(home, '.config'),
     stateHome: process.env.XDG_STATE_HOME || path.join(home, '.local/state'),
-    dryRun: flags.has('--dry-run'), check: flags.has('--check'),
-    backup: flags.has('--backup'), linksOnly: flags.has('--links-only'),
+    dryRun: flags.has('--dry-run'), check: flags.has('--check'), backup: flags.has('--backup'),
   });
   if (flags.has('--check') && result.changes) process.exitCode = 1;
 }

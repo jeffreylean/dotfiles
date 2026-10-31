@@ -6,198 +6,61 @@ From a clone of this repository on Linux or macOS:
 # Inspect first. --backup shows how conflicting paths would be preserved.
 ./scripts/installation.sh --dry-run --backup
 
-# Install links, declared Pi packages and Claude plugins, and skill/extension npm dependencies.
+# Link the app configuration.
 ./scripts/installation.sh --backup
 
 # Subsequent runs normally need no flags.
 ./scripts/installation.sh
 ```
 
-This replaces `setup-symlinks.sh`. Run it from any working directory; the checkout
-need not be at `~/Projects/dotfiles`.
+Run it from any working directory; the checkout need not be at `~/Projects/dotfiles`.
 
-## Prerequisites and scope
+## Scope
 
-Install **Node.js 22+**, **npm**, **Pi**, and **Claude Code** first. Harness executables, login,
-credentials, and arbitrary system tools mentioned in skill prose are not installed
-by this script. The Bash entry point delegates filesystem/JSON reconciliation to a
-dependency-free Node helper.
+The installer links app configuration only: Neovim, Ghostty, tmux, Herdr, and Zed.
+macOS tmux files go to `~/.tmux`; Linux tmux files go to `$XDG_CONFIG_HOME/tmux`.
+It does not inspect or remove `~/.tmux.conf`, or install Omarchy integrations.
+Install **Node.js 22+** first. The Bash entry point delegates to a dependency-free
+Node helper.
 
-The installer retains the previous script's app configuration mappings (Neovim,
-Ghostty, tmux, Herdr, and Zed), plus agent configuration. macOS tmux files go to
-`~/.tmux`; Linux tmux files go to `$XDG_CONFIG_HOME/tmux`. It does not inspect or
-remove `~/.tmux.conf`, or install Omarchy integrations.
+## Coding agents
 
-**Only checkout content and explicitly declared packages are installation sources.**
-No skills are collected from the current machine. Omarchy, personal skills, auth
-files, sessions, and machine-local caches are not copied into the checkout or
-replicated onto another machine. Pi and OpenCode settings are Git-managed;
-Claude settings stay machine-local. The repo contains an Atuin hook template.
+Everything under `agents/` belongs to the `agents` CLI, driven by
+`agents/agents.toml`: skill and instruction links for Claude Code, Pi, Codex and
+OpenCode, Pi packages, and Claude plugins.
 
-## Skill and extension layout
-
-| Source | Destination |
-| --- | --- |
-| `agents/pi/settings.json` | `~/.pi/agent/settings.json` |
-| `agents/claude/settings.json` | Atuin hook template for local `~/.claude/settings.json` (not linked) |
-| `agents/opencode/opencode.json` | `$XDG_CONFIG_HOME/opencode/opencode.json` |
-| `agents/skills/` | `~/.agents/skills` (whole-directory link) |
-| Shared skills (`matt-skills/` only `grill-with-docs`, `grilling`, `domain-modeling`) plus `agents/claude/skills/` | Individual links in `~/.claude/skills/` |
-| `agents/opencode/skills/` | Individual links in `$XDG_CONFIG_HOME/opencode/skills/` |
-| `agents/pi/pi-skills/` | Individual links in `~/.pi/agent/skills/` |
-| `agents/pi/extensions/` | Individual links in `~/.pi/agent/extensions/` |
-| `agents/pi/extensions/*/skills/` | Individual links in `~/.pi/agent/skills/` |
-
-Pi and OpenCode discover the shared root directly. Claude gets explicit shared
-skill links, except `agents/skills/matt-skills/`: Claude loads those from the
-`mattpocock-skills@claude-plugins-official` plugin instead. The exceptions are
-`grill-with-docs` and the skills it calls (`grilling`, `domain-modeling`), which
-are linked for Claude directly. OpenCode also
-supports Claude-compatible discovery locations, so a Claude directory is not an
-isolation guarantee.
-
-Add a skill with a `SKILL.md` in the appropriate source directory; no install list
-needs updating. Shared skills immediately appear through the shared root; rerun
-installation to refresh the per-harness links. Duplicate destination names with
-different sources fail rather than silently choosing an override.
-
-Only relative symlinks that resolve within the checkout are portable source
-content; external source targets are rejected. Generated home links use the
-current checkout's absolute path. Rerun setup after moving the checkout.
-
-## Third-party Pi extensions
-
-`agents/pi/packages.json` contains the desired npm packages, pinned to the versions
-observed on the original machine. Add an entry such as:
-
-```json
-"npm:pi-example@1.2.3"
+```sh
+agents sync --dry-run   # show what would change
+agents sync             # apply it
+agents status           # what each agent sees, and any drift
 ```
 
-Then rerun installation. The installer checks both Pi's declaration and the
-installed version. Missing or changed packages are installed using `pi install`;
-matching packages are skipped. It does not run a global Pi update.
+The installer never touches paths under `agents/`. On its first run after the
+split it drops its old agent entries from its state without removing those links.
 
-Only pinned npm sources are supported by this manifest. For a deliberate upgrade,
-edit the version and rerun. Custom Pi resource-filter objects are preserved;
-if such a package needs installation or a pin change, setup asks you to reconcile
-it manually instead of silently broadening enabled resources.
-
-Removing a manifest entry stops installer management; it does **not** uninstall
-that package or remove its declaration from Pi settings. Use `pi remove <source>`
-and remove the manifest entry to stop sharing it. Pi can still discover/install
-packages declared in the Git-managed settings even if they are not in the manifest.
-
-Keep the manifest and settings package entries aligned: the manifest supplies
-bootstrap pins, and `pi install` reconciles those declarations through the settings
-symlink. Packages added interactively should also receive a manifest pin if they
-are intended for reproducible bootstrap. Existing local package files are not
-imported into Git.
-
-## Claude plugins
-
-`agents/claude/plugins.json` declares the Claude Code plugins to install:
-
-```json
-{
-  "marketplaces": { "pstack-claude": "michael-denyer/pstack-claude" },
-  "plugins": ["pstack@pstack-claude"]
-}
-```
-
-`marketplaces` maps a marketplace name to its GitHub `owner/repo` source. Every
-plugin id (`name@marketplace`) must use a declared marketplace, including the
-official one, and ids must be unique. A bad manifest fails before any link changes.
-
-The installer reads current state through `claude plugin marketplace list --json`
-and `claude plugin list --json`. It runs `claude plugin marketplace add <source>`
-for each missing marketplace, then `claude plugin install <id>` for each missing
-plugin, and afterwards checks that every declared plugin is listed. Claude
-writes its own machine-local settings; the installer never edits them.
-
-Plugins are never removed, disabled, or re-enabled. A declared plugin the user
-disabled locally counts as installed and stays disabled, and installed plugins
-or marketplaces missing from the manifest are left alone. Use `claude plugin
-uninstall` to drop one. `--links-only` skips this step, and so does a manifest
-that declares nothing; neither runs `claude`.
-
-## Settings ownership
-
-Pi and OpenCode settings are linked to their respective files under `agents/`.
-Existing local Pi settings require `--backup` before being replaced; their values
-are **not** merged into the repo. Package preflight reads the repo settings that
-will be installed, not the soon-to-be-backed-up local settings.
-
-Claude `~/.claude/settings.json` stays machine-local and is not changed by the
-installer. `agents/claude/settings.json` is a template for manually merging Atuin
-hooks into local settings; never replace local preferences with the template.
-The hooks run only when `atuin` is available and do not fail a tool call if
-history capture fails. Atuin itself is not installed by this script.
-
-Preference changes and Pi package commands can change the Git working tree through
-managed links. Review and commit intended changes. Pi 0.87.1's settings
-write-through was smoke-tested with an isolated local-package install; other
-harness/version writers may replace links. `--check` reports such replacements.
-
-Keep secrets out of Git-managed settings and the Claude hook template. Pi
-`auth.json`, Claude local settings and credentials, package storage, and sessions
-remain local. Known credential/Claude local-override paths under `agents/` are
-ignored as a safeguard; review settings before committing.
-
-## Local npm dependencies
-
-The installer checks `dependencies` in repo skill and extension packages.
-Metadata-only packages are skipped.
-
-- With `package-lock.json`: use `npm ci --omit=dev`.
-- Without an npm lockfile: use `npm install` without saving manifests/locks and
-  without automatically installing peer dependencies. This does **not** reproduce
-  Bun's lock resolution, and transitive versions may differ across machines.
-- Record the manifest/lock/platform/Node-major fingerprint in machine-local state.
-- Skip unchanged, healthy installs; reinstall after dependency changes or missing
-  modules. Failed installs are not marked complete.
-
-Dependencies are generated in ignored `node_modules` beside the source packages,
-where Node resolves symlinked skills' imports. The installer does not merge local
-configuration into source files or change tracked manifests/locks. npm lifecycle
-scripts still execute: install only trusted code.
+`agents/claude/settings.json` is a template for manually merging Atuin hooks into
+the machine-local `~/.claude/settings.json`; it is not linked.
 
 ## Safety and repeatability
 
 ```sh
-./scripts/installation.sh --dry-run     # No writes or package/plugin installation
+./scripts/installation.sh --dry-run     # No writes
 ./scripts/installation.sh --check       # Exit 1 on drift/conflicts; otherwise 0
-./scripts/installation.sh --links-only  # Skip all package, plugin, and dependency installation
 ```
 
-- Correct links are no-ops; additions are discovered automatically.
-- Obsolete owned links are removed, including deleted/renamed extensions.
-- Existing unrelated local files, skills, and packages stay where they are; they
-  are never imported or installed on another machine.
+- Correct links are no-ops. Obsolete owned links are removed.
 - Conflicting local paths stop setup before link changes. `--backup` opts into
   moving conflicts to timestamped backups under the local state directory's
-  `backups/` folder, outside skill discovery roots. Nothing is merged back into
-  Git. If that directory is on another filesystem and the move fails, relocate
-  the conflicting file manually before retrying; setup does not delete it.
+  `backups/` folder. Nothing is merged back into Git.
 - A replaced obsolete link is left untouched and reported for manual review.
-- Shared `~/.agents/skills` is repo-owned. If it is an existing real directory,
-  `--backup` preserves the entire directory before linking the repo; those local
-  entries are not merged or kept active within the new shared root.
-- Per-tool skill/extension directories must be real directories. A symlinked
-  parent requires manual migration; setup will not write through it.
+- Only relative symlinks that resolve within the checkout are portable source
+  content. Generated home links use the current checkout's absolute path, so rerun
+  setup after moving the checkout.
 
-Ownership and successful dependency fingerprints live at
-`$XDG_STATE_HOME/dotfiles/installation.json` (default `~/.local/state/dotfiles`).
-Do not commit this machine-local state. The first run recognizes legacy links into
-this repo's managed skill/extension trees; it does not adopt external links.
-An installation lock prevents overlapping apply phases. After a crash, inspect
-`installation.lock` in that state directory before removing a stale lock.
-
-The installer targets `~/.pi/agent`; an alternate `PI_CODING_AGENT_DIR` is rejected
-rather than installing packages into a different location from the links.
-
-Remember to commit and push new/moved skills, the installer, and package and
-plugin list changes. Another machine only receives what is present in its checkout.
+Ownership lives at `$XDG_STATE_HOME/dotfiles/installation.json` (default
+`~/.local/state/dotfiles`). Do not commit it. An installation lock prevents
+overlapping runs; after a crash, inspect `installation.lock` in that directory
+before removing a stale lock.
 
 ## Tests
 
@@ -205,8 +68,4 @@ plugin list changes. Another machine only receives what is present in its checko
 node --test scripts/install.test.mjs
 ```
 
-Tests use disposable homes/checkouts and fake package-manager commands. They cover
-repeat runs, additions, removals, conflicts, ownership, no local imports, platform
-layout, package pinning, Claude plugin reconciliation, dependency changes, and
-failure/retry behavior. They do not download third-party packages or plugins, and
-they do not substitute for native macOS smoke testing.
+Tests use disposable homes and checkouts.

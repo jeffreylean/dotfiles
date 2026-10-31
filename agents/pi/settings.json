@@ -16,12 +16,6 @@
     "npm:pi-cloudflare",
     "git:github.com/michael-denyer/pstack-claude"
   ],
-  "skills": [
-    "!**/matt-skills/**",
-    "+~/.agents/skills/matt-skills/grill-with-docs",
-    "+~/.agents/skills/matt-skills/grilling",
-    "+~/.agents/skills/matt-skills/domain-modeling"
-  ],
   "subagents": {
     "agentOverrides": {
       "delegate": {
