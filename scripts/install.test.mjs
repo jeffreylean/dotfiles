@@ -21,7 +21,7 @@ function fixture(t) {
   for (const dir of ['nvim', 'ghostty', 'tmux', 'agents/skills', 'agents/commands', 'agents/claude/rules', 'agents/claude/skills', 'agents/opencode/skills', 'agents/opencode/subagents', 'agents/pi/agents', 'agents/pi/pi-skills', 'agents/pi/extensions']) {
     fs.mkdirSync(path.join(root, dir), { recursive: true });
   }
-  for (const file of ['herdr/config.toml', 'zed/settings.json', 'zed/keymap.json', 'agents/AGENTS.md', 'agents/opencode/opencode.json', 'agents/pi/AGENTS.md', 'agents/pi/SYSTEM.md', 'agents/pi/context.md', 'agents/pi/keybindings.json']) write(file);
+  for (const file of ['herdr/config.toml', 'zed/settings.json', 'zed/keymap.json', 'agents/AGENTS.md', 'agents/pstack-models.md', 'agents/opencode/opencode.json', 'agents/pi/AGENTS.md', 'agents/pi/SYSTEM.md', 'agents/pi/context.md', 'agents/pi/keybindings.json']) write(file);
   write('agents/pi/settings.json', '{}');
   write('agents/claude/settings.json', '{}');
   write('agents/pi/packages.json', '{"packages":[]}');
@@ -99,6 +99,9 @@ test('fresh setup creates the existing dotfiles and per-harness layout', (t) => 
   assertLink(path.join(f.home, '.agents/skills'), path.join(f.root, 'agents/skills'));
   assertLink(f.settings, path.join(f.root, 'agents/pi/settings.json'));
   assert.equal(fs.existsSync(path.join(f.home, '.claude/settings.json')), false);
+  for (const sheet of ['.claude/pstack-models.md', '.pi/agent/pstack-models.md']) {
+    assertLink(path.join(f.home, sheet), path.join(f.root, 'agents/pstack-models.md'));
+  }
   assertLink(path.join(f.home, '.claude/skills/common'), path.join(f.root, 'agents/skills/common'));
   assertLink(path.join(f.home, '.pi/agent/skills/pi-only'), path.join(f.root, 'agents/pi/pi-skills/pi-only'));
   assertLink(path.join(f.config, 'opencode/skills/opencode-only'), path.join(f.root, 'agents/opencode/skills/opencode-only'));

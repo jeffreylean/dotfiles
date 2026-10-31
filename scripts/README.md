@@ -160,9 +160,7 @@ Metadata-only packages are skipped.
 Dependencies are generated in ignored `node_modules` beside the source packages,
 where Node resolves symlinked skills' imports. The installer does not merge local
 configuration into source files or change tracked manifests/locks. npm lifecycle
-scripts still execute: install only trusted code. `browser-tools` uses Puppeteer,
-which may download a browser. Set `PUPPETEER_SKIP_DOWNLOAD=true` if managing the
-browser separately.
+scripts still execute: install only trusted code.
 
 ## Safety and repeatability
 

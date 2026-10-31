@@ -13,44 +13,50 @@
     "npm:@roodriigoooo/pi-hunk@0.9.0",
     "npm:@plannotator/pi-extension",
     "npm:pi-claude-bridge",
-    "npm:pi-cloudflare"
+    "npm:pi-cloudflare",
+    "git:github.com/michael-denyer/pstack-claude"
+  ],
+  "skills": [
+    "!**/matt-skills/**",
+    "+~/.agents/skills/matt-skills/grill-with-docs",
+    "+~/.agents/skills/matt-skills/grilling",
+    "+~/.agents/skills/matt-skills/domain-modeling"
   ],
   "subagents": {
     "agentOverrides": {
-      "context-builder": {
-        "thinking": "high"
-      },
       "delegate": {
         "thinking": "medium"
-      },
-      "planner": {
-        "thinking": "xhigh"
       },
       "researcher": {
         "thinking": "medium"
       },
       "reviewer": {
         "thinking": "high",
-        "model": "openai-codex/gpt-6-sol"
+        "model": "claude-bridge/claude-opus-5-5"
       },
       "scout": {
         "thinking": "xhigh",
-        "model": "openai-codex/gpt-6-luna"
+        "model": "claude-bridge/claude-haiku-5-5"
       },
       "worker": {
         "thinking": "medium",
-        "model": "openai-codex/gpt-6-sol"
+        "model": "claude-bridge/claude-sonnet-5-5"
       },
       "oracle": {
         "thinking": "xhigh",
-        "model": "openai-codex/gpt-6-astra"
+        "model": "claude-bridge/claude-fable-5-1"
       },
       "evidence-auditor": {
         "thinking": "high",
-        "model": "openai-codex/gpt-6-sol"
+        "model": "claude-bridge/claude-opus-5-5"
+      },
+      "fable-reviewer": {
+        "thinking": "high",
+        "model": "claude-bridge/claude-fable-5-1",
+        "tools": ["read", "grep", "find", "ls", "bash", "edit", "write", "fetch_content"]
       }
     },
-    "defaultModel": "openai-codex/gpt-5.6-terra"
+    "defaultModel": "claude-bridge/claude-sonnet-5-5"
   },
   "enableInstallTelemetry": false
 }

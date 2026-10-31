@@ -1,9 +1,0 @@
-{
-  "stateDir": ".pi/state",
-  "defaultPlanningAgents": ["scout", "planner"],
-  "defaultExecutionAgent": "worker",
-  "defaultReviewAgent": "reviewer",
-  "requireReviewBeforeComplete": true,
-  "requireChecksBeforeComplete": true,
-  "progressFile": "progress.md"
-}

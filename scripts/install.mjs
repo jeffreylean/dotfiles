@@ -115,7 +115,10 @@ function desiredLayout(root, home, config, platform) {
     if (exists(path.join(root, relative, 'skills'))) skills(`${relative}/skills`, path.join(pi, 'skills'));
   }
 
+  link('agents/pstack-models.md', path.join(pi, 'pstack-models.md'));
+
   link('agents/AGENTS.md', path.join(home, '.claude/CLAUDE.md'));
+  link('agents/pstack-models.md', path.join(home, '.claude/pstack-models.md'));
   // Claude settings stay machine-local; the Atuin hook file is a merge template.
   link('agents/commands', path.join(home, '.claude/commands'));
   link('agents/claude/rules', path.join(home, '.claude/rules'));

@@ -75,38 +75,19 @@ Example output:
   ]
 }`;
 
-const CODEX_MODEL_ID = "gpt-5.1-codex-mini";
-const HAIKU_MODEL_ID = "claude-haiku-4-5";
+const HAIKU_PROVIDER = "claude-bridge";
+const HAIKU_MODEL_ID = "claude-haiku-5-5";
 
 /**
- * Prefer Codex mini for extraction when available, otherwise fallback to haiku or the current model.
+ * Prefer Haiku through claude-bridge for extraction, otherwise fall back to the current model.
  */
-async function selectExtractionModel(
+function selectExtractionModel(
   currentModel: Model<Api>,
   modelRegistry: {
     find: (provider: string, modelId: string) => Model<Api> | undefined;
-    getApiKey: (model: Model<Api>) => Promise<string | undefined>;
   },
-): Promise<Model<Api>> {
-  const codexModel = modelRegistry.find("openai-codex", CODEX_MODEL_ID);
-  if (codexModel) {
-    const apiKey = await modelRegistry.getApiKey(codexModel);
-    if (apiKey) {
-      return codexModel;
-    }
-  }
-
-  const haikuModel = modelRegistry.find("anthropic", HAIKU_MODEL_ID);
-  if (!haikuModel) {
-    return currentModel;
-  }
-
-  const apiKey = await modelRegistry.getApiKey(haikuModel);
-  if (!apiKey) {
-    return currentModel;
-  }
-
-  return haikuModel;
+): Model<Api> {
+  return modelRegistry.find(HAIKU_PROVIDER, HAIKU_MODEL_ID) ?? currentModel;
 }
 
 /**
@@ -473,8 +454,7 @@ export default function (pi: ExtensionAPI) {
       return;
     }
 
-    // Select the best model for extraction (prefer Codex mini, then haiku)
-    const extractionModel = await selectExtractionModel(
+    const extractionModel = selectExtractionModel(
       ctx.model,
       ctx.modelRegistry,
     );
@@ -500,7 +480,9 @@ export default function (pi: ExtensionAPI) {
           const response = await complete(
             extractionModel,
             { systemPrompt: SYSTEM_PROMPT, messages: [userMessage] },
-            { apiKey, signal: loader.signal },
+            // claude-bridge routes cacheRetention "none" to an isolated Claude Code
+            // process, so this one-off call never syncs into the session.
+            { apiKey, signal: loader.signal, cacheRetention: "none" },
           );
 
           if (response.stopReason === "aborted") {
