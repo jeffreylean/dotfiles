@@ -17,7 +17,7 @@ function fixture(t) {
     fs.mkdirSync(path.dirname(file), { recursive: true });
     fs.writeFileSync(file, content);
   }
-  for (const file of ['nvim/init.lua', 'ghostty/config', 'tmux/tmux.conf', 'herdr/config.toml', 'zed/settings.json', 'zed/keymap.json']) write(file);
+  for (const file of ['nvim/init.lua', 'ghostty/config', 'rex/init.lua', 'tmux/tmux.conf', 'herdr/config.toml', 'zed/settings.json', 'zed/keymap.json']) write(file);
   const messages = [];
   const options = { root, home, config, stateHome, platform: 'linux', log: (line) => messages.push(line) };
   return { root, home, config, stateHome, write, messages,
@@ -37,8 +37,8 @@ function assertLink(file, destination) {
 
 test('fresh setup links each config into the platform location', (t) => {
   const f = fixture(t);
-  assert.equal(f.apply().changes, 6);
-  for (const name of ['nvim', 'ghostty', 'herdr/config.toml', 'zed/settings.json', 'zed/keymap.json']) {
+  assert.equal(f.apply().changes, 7);
+  for (const name of ['nvim', 'ghostty', 'rex', 'herdr/config.toml', 'zed/settings.json', 'zed/keymap.json']) {
     assertLink(path.join(f.config, name), path.join(f.root, name));
   }
   assertLink(path.join(f.config, 'tmux/tmux.conf'), path.join(f.root, 'tmux/tmux.conf'));
@@ -195,7 +195,7 @@ test('state entries under agents/ are released: left on disk, unreported, and dr
   for (const [dst, raw] of Object.values(agentLinks)) assertLink(dst, raw);
   assertLink(retargeted, path.join(f.root, 'agents/library/grill'));
   const saved = JSON.parse(fs.readFileSync(f.stateFile));
-  assert.equal(Object.keys(saved.links).length, 6);
+  assert.equal(Object.keys(saved.links).length, 7);
   assert.ok(Object.keys(saved.links).every((dst) => dst.startsWith(f.config)));
   assert.deepEqual(saved.dependencies, {});
 });

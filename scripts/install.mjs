@@ -41,6 +41,7 @@ function desiredLayout(root, home, config, platform) {
 
   link('nvim', path.join(config, 'nvim'));
   link('ghostty', path.join(config, 'ghostty'));
+  link('rex', path.join(config, 'rex'));
   const tmux = platform === 'darwin' ? path.join(home, '.tmux') : path.join(config, 'tmux');
   for (const name of entries(path.join(root, 'tmux'))) link(`tmux/${name}`, path.join(tmux, name));
   for (const relative of ['herdr/config.toml', 'zed/settings.json', 'zed/keymap.json']) {

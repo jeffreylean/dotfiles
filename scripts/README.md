@@ -17,7 +17,7 @@ Run it from any working directory; the checkout need not be at `~/Projects/dotfi
 
 ## Scope
 
-The installer links app configuration only: Neovim, Ghostty, tmux, Herdr, and Zed.
+The installer links app configuration only: Neovim, Ghostty, Rex, tmux, Herdr, and Zed.
 macOS tmux files go to `~/.tmux`; Linux tmux files go to `$XDG_CONFIG_HOME/tmux`.
 It does not inspect or remove `~/.tmux.conf`, or install Omarchy integrations.
 Install **Node.js 22+** first. The Bash entry point delegates to a dependency-free
