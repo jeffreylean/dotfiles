@@ -12,41 +12,63 @@ local function current_dir()
   return p and p.cwd
 end
 
+local config_dir = (os.getenv("REX_CONFIG") or (os.getenv("XDG_CONFIG_HOME") or os.getenv("HOME") .. "/.config") .. "/rex/init.lua"):match("^(.*)/")
+local rex_bins = {
+  "rex",
+  os.getenv("HOME") .. "/Library/Application Support/com.superlogical.rex/RexServer/Versions/Current/Rex Server.app/Contents/MacOS/rex",
+}
+
+-- New panes start at the default font size. Step the new pane's font to
+-- match the pane it was split from; see match_font.lua.
+local function match_font(ctx, block_id)
+  local size = rex.block.call(terminal, "size", { block_id = ctx.block_id })
+  if not (size and ctx.client_id and ctx.session_id and block_id) then return end
+  for _, bin in ipairs(rex_bins) do
+    local h = rex.exec.start({
+      bin, "do", "-s", ctx.session_id, config_dir .. "/match_font.lua",
+      "client_id=" .. ctx.client_id, "block_id=" .. block_id, "height=" .. size.cell_height_px,
+    }, { detach = true, stdout = false, stderr = false })
+    if h then return end
+  end
+end
+
 local function split_beside(ctx, direction, options)
-  return rex.session.new_split{
+  local r, err = rex.session.new_split{
     anchor_id = ctx.block_id,
     direction = direction,
     side = "after",
     focus = true,
     layout = rex.layout.block{ flavor = shell, options = options },
   }
+  if r then match_font(ctx, r.block_ids and r.block_ids[1]) end
+  return r, err
 end
 
--- bind v / s: split-window -c "#{pane_current_path}"
-local function split_here(name, title, direction)
+-- bind v / s: split-window -c "#{pane_current_path}". The app's own splits
+-- keep the directory but not the font size, so these replace them. Unlike the
+-- app, rex.session.new_split starts in ~ unless it is given a cwd.
+local function split(name, title, direction)
   rex.action{
     name = name,
     title = title,
-    category = "Panes",
+    category = "Pane",
     run = function(ctx)
       return split_beside(ctx, direction, { cwd = current_dir() })
     end,
   }
 end
-split_here("split_right_here", "Split Right in This Directory", "horizontal")
-split_here("split_down_here", "Split Down in This Directory", "vertical")
-rex.bind("ctrl+space>v", "split_right_here")
-rex.bind("ctrl+space>s", "split_down_here")
--- The app's default split keys start in the default directory; make them
--- follow the pane too.
-rex.bind("cmd+d", "split_right_here")
-rex.bind("shift+cmd+d", "split_down_here")
+split("split_right", "Split Right Custom", "horizontal")
+split("split_down", "Split Down Custom", "vertical")
+rex.bind("ctrl+space>v", "split_right")
+rex.bind("ctrl+space>s", "split_down")
+rex.bind("cmd+d", "split_right")
+rex.bind("shift+cmd+d", "split_down")
 
 -- bind t (c in tmux): new-window -c "#{pane_current_path}"
 rex.action{
   name = "tab_here",
   title = "New Tab in This Directory",
-  category = "Tabs",
+  category = "Tab",
   run = function()
     return rex.session.new_window{
       layout = rex.layout.block{ flavor = shell, options = { cwd = current_dir() } },
@@ -85,7 +107,7 @@ for key, direction in pairs{ H = "left", J = "down", K = "up", L = "right" } do
   rex.action{
     name = "resize_" .. direction,
     title = "Resize Pane " .. direction,
-    category = "Panes",
+    category = "Pane",
     run = function()
       rex.client.queue("pane.resize", { direction = direction, amount = 5 })
       rex.client.queue("client.mode.enter", { name = "resize" })
