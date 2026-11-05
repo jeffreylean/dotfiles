@@ -74,12 +74,3 @@ instructions = "opencode/AGENTS.md" # the shared prompt comes from opencode.json
 "opencode.json" = "opencode/opencode.json"
 "command" = "commands"
 "agents" = "opencode/subagents"
-
-# Per machine, keyed by the name `agents status` prints.
-# An override can narrow the agent set and add routes. It cannot drop a route or a link.
-[machine.omarchy]
-agents = ["claude", "pi", "codex"]
-
-[[machine.omarchy.skills]]
-from = "library/matt-skills/{to-prd,to-tickets}"
-to = ["pi"]
