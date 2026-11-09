@@ -135,6 +135,10 @@ rex.action{
 }
 rex.bind("ctrl+space>shift+s", "source_zshrc")
 
+-- bind y (Escape in tmux): copy-mode
+require("extensions.scrollback")
+rex.bind("ctrl+space>y", "scrollback")
+
 -- bind r: source-file ~/.tmux/tmux.conf
 rex.bind("ctrl+space>r", "client.config.reload")
 
