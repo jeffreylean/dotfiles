@@ -67,20 +67,27 @@ return function(opts)
     quote(lines)
   end, { buffer = scrollback })
 
+  local session = vim.env.REX_SESSION
+
+  local function send()
+    if vim.v.exiting ~= 0 or not message_loaded() then return end
+    local text = table.concat(vim.api.nvim_buf_get_lines(message, 0, -1, false), "\n"):gsub("%s+$", "")
+    if text == "" then return end
+    local event = vim.json.encode({
+      block_id = opts.block_id,
+      event = { type = "paste", payload = { text = text } },
+    })
+    vim.system({ "rex", "api", "call", "-s", session, "block.event", event }):wait()
+    if opts.submit then
+      vim.system({ "rex", "send-key", "-s", session, "-b", opts.block_id, "enter" }):wait()
+    end
+  end
+
   vim.api.nvim_create_autocmd("VimLeavePre", {
     callback = function()
-      if vim.v.exiting ~= 0 or not message_loaded() then return end
-      local text = table.concat(vim.api.nvim_buf_get_lines(message, 0, -1, false), "\n"):gsub("%s+$", "")
-      if text == "" then return end
-      local event = vim.json.encode({
-        block_id = opts.block_id,
-        event = { type = "paste", payload = { text = text } },
-      })
-      local session = vim.env.REX_SESSION
-      vim.system({ "rex", "api", "call", "-s", session, "block.event", event }):wait()
-      if opts.submit then
-        vim.system({ "rex", "send-key", "-s", session, "-b", opts.block_id, "enter" }):wait()
-      end
+      send()
+      -- Closing the float focuses whichever pane Rex picks, not the source.
+      vim.system({ "rex", "focus", "-s", session, opts.block_id }):wait()
     end,
   })
 end
