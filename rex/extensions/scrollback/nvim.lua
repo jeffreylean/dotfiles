@@ -58,6 +58,8 @@ return function(opts)
     local quoted = vim.list_extend(blockquote(lines), { "", "" })
     vim.api.nvim_buf_set_lines(message, start, -1, false, quoted)
     vim.api.nvim_win_set_cursor(win, { vim.api.nvim_buf_line_count(message), 0 })
+    vim.api.nvim_set_current_win(win)
+    vim.cmd.startinsert()
   end
 
   vim.keymap.set("x", ">", function()
