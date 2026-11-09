@@ -1,8 +1,19 @@
 -- Rex has no copy mode, so the "scrollback" action opens the focused pane's
--- scrollback in nvim in a floating pane. q or Esc closes it.
+-- scrollback in nvim in a floating pane. q or Esc closes it. Pressing > on a
+-- visual selection quotes it into a message that is sent to the pane on exit.
 
 local terminal = "com.superlogical.terminal"
 local shell = "com.superlogical.terminal.shell"
+local nvim_setup = debug.getinfo(1, "S").source:gsub("^@", ""):match("(.*)/") .. "/nvim.lua"
+
+-- A quote starts with ">", which a shell would run as a redirect on Enter.
+local SHELLS = { zsh = true, bash = true, fish = true, sh = true, dash = true, ksh = true, tcsh = true, nu = true }
+
+local function submits(block_id)
+  local proc = rex.block.call(terminal, "process", { block_id = block_id })
+  local foreground = proc and proc.foreground
+  return foreground ~= nil and not SHELLS[foreground.name]
+end
 
 local function scrollback_text(block_id)
   local max_bytes = 983040
@@ -39,12 +50,8 @@ rex.action{
         path_prepend = { "/opt/homebrew/bin" },
         command = {
           "nvim", "-n", "+",
-          -- Keep the last line at the bottom, as the terminal showed it.
-          -- smoothscroll lets a long wrapped line start above the top row,
-          -- and the pane starts at 80x24 until the app resizes it.
-          "-c", "call delete(expand('%:p')) | setlocal nomodifiable smoothscroll",
-          "-c", "autocmd VimResized * normal! zb",
-          "-c", "nnoremap <buffer> q <cmd>qa!<cr> | nnoremap <buffer> <esc> <cmd>qa!<cr>",
+          "-c", string.format("lua dofile(%q)({ block_id = %q, submit = %s })",
+            nvim_setup, ctx.block_id, tostring(submits(ctx.block_id))),
           path,
         },
       } },
