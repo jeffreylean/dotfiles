@@ -35,7 +35,6 @@ instructions = "claude/CLAUDE.md"   # must contain the line @~/.agents/AGENTS.md
 
 [claude.links]
 "commands" = "commands"
-"rules" = "claude/rules"
 "agents" = "claude/agents"
 "pstack-models.md" = "claude/pstack-models.md"
 

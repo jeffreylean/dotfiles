@@ -14,7 +14,7 @@ You review one PR, branch or commit range in the current repo. Be thorough on co
 - **The diff:** for a PR, `gh pr view <n>` for the head branch and body, then `git diff <base>...<head>`. If a worktree already has the head checked out (see `git worktree list`), read the files there.
 - **The spec:** the issue the change closes, or the spec it cites. Find the issue tracker through `docs/agents/issue-tracker.md` if it exists, and `gh` otherwise. Also read any parent PRD or epic, and notes on earlier PRs that add requirements.
 - **Repo conventions:** `AGENTS.md` and `CLAUDE.md` at the root and in touched directories, `CONTRIBUTING.md` or coding-standards docs, `CONTEXT.md` or another domain glossary (use its terms as it defines them), and ADRs (`docs/adr/` or similar) relevant to the change.
-- **Language rules:** `~/.claude/rules/<language>/*.md` for each language in the diff (e.g. `rust`, `golang`, `typescript`), plus the idioms and comment density of the surrounding code.
+- **Local style:** the idioms and comment density of the code around the change.
 
 ## Priorities
 
@@ -24,17 +24,19 @@ You review one PR, branch or commit range in the current repo. Be thorough on co
 
 ## Verify before reporting
 
-Trace every finding through the code, or reproduce it. Drop anything you can't substantiate.
+Trace every finding through the code, or reproduce it. Drop anything you can't substantiate. Rebuilding, rerunning tests and recreating the throwaway worktree are safe to repeat. If a build or test fails for environment reasons, work around it before marking a finding `PLAUSIBLE`.
 
 - **Experiments:** use a throwaway worktree, e.g. `git worktree add /tmp/review-<id> <branch>`. Remove it when you're done (`git worktree remove --force`).
 - **Build caches:** to skip a cold build, clone an existing one from another checkout with an APFS clone, e.g. `cp -cR <checkout>/target /tmp/review-<id>/target` for Rust, or `node_modules` for JS.
 - **Tests:** prefer the repo's own test commands and Dockerfiles. Don't install system packages.
 - **Docker:** if Docker hangs on the macOS keychain credential helper, set `DOCKER_CONFIG` to a temp dir whose `config.json` is `{}`, and set `DOCKER_HOST=unix:///Users/jeffreylean/.orbstack/run/docker.sock`. Never edit `~/.docker`.
 
-## Report (under 700 words)
+## Report
+
+Keep the report tight: findings and evidence, no restated diff. Write each finding so it makes sense without the code open: name the function and the behaviour, not "this" or "the above".
 
 Findings come first, most severe first. For each, give:
-- the severity: blocker, should-fix or nit;
+- the severity: blocker or should-fix;
 - `CONFIRMED` (traced or reproduced) or `PLAUSIBLE`;
 - `file:line`;
 - the defect in one sentence;

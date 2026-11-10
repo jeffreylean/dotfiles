@@ -1,7 +1,12 @@
 ## Code review
-- Everytime you have done writing code, Please ALWAYS ask yourself these few questions:
-    - Are there dead code ?
-    - Are there any duplication on methods/ variable that I just created ?
+After writing code, check your diff for:
+- dead code it creates or leaves behind
+- duplicated methods or variables; merge them with existing ones instead of adding near-copies
+Fix these inside the files you touched. Report, without fixing, problems you notice elsewhere.
+
+## Finishing work
+- Don't end a turn while work you were asked to do remains. Work through ordinary obstacles such as failing tests, a missing dependency or a wrong path before you stop.
+- Stop and ask only when you are actually blocked: on a decision that is mine to make, missing access, or an action that needs approval.
 
 ## Git worktrees
 - Create every git worktree under `~/Projects/worktree/<project>/`, where `<project>` is the repository's directory name. Example for rubrix: `git worktree add ~/Projects/worktree/rubrix/<branch> <branch>`.
