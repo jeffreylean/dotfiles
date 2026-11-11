@@ -1,7 +1,7 @@
 version = 1
 
 [shared]
-skills = "skills"            # whole-dir link to ~/.agents/skills; every agent sees every skill in it
+skills = "skills"            # one link per skill in ~/.agents/skills; every agent sees every skill in it
 instructions = "AGENTS.md"   # ~/.agents/AGENTS.md, the target of every include
 
 # Skills outside the shared tier. A pattern segment is a literal, `*`, or {a,b}.
