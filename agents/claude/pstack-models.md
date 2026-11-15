@@ -17,7 +17,7 @@ reflect judgment, divergent, synthesizer: opus @high
 arena runners: opus @high, fable @high, sonnet @high, haiku @medium
 arena cross-judge pool: opus @high, fable @high, sonnet @high, haiku @high
 swarm workers: opus @medium
-architect runners: opus @xhigh, fable @xhigh, sonnet @high, haiku @high
+architect runners: opus @xhigh, fable @xhigh
 interrogate reviewers: opus @xhigh, fable @xhigh, sonnet @high, haiku @high
 
 default effort: high
