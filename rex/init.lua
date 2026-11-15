@@ -148,3 +148,10 @@ rex.bind("ctrl+space>ctrl+space", "pane.send_key", { key = "ctrl+space" })
 -- Not in tmux.conf, but Rex has no default.
 rex.bind("ctrl+space>b", "client.sidebar.toggle")
 rex.bind("ctrl+space>z", "pane.zoom")
+
+-- >>> leaf >>>
+-- Managed by `leaf rex install`; `leaf rex uninstall` removes it.
+-- plugin: a55ea9689b312a41
+dofile("/Users/jeffreylean/.config/rex/plugins/leaf/init.lua").setup({ bin = { "/Users/jeffreylean/.cargo/bin/leaf" } })
+-- open: idle
+-- <<< leaf <<<
